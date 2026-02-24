@@ -15,6 +15,7 @@ class DioClient {
           receiveTimeout: const Duration(seconds: 15),
         ),
       ) {
+        //Intercepteur pour afficher les requêtes et les réponses dans la console
     dio.interceptors.add(LogInterceptor(requestBody: true, responseBody: true));
   }
 }

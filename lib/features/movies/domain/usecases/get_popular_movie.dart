@@ -3,10 +3,10 @@ import 'package:rotten_tomatoes/core/error/failures.dart';
 import 'package:rotten_tomatoes/features/movies/domain/entities/movie.dart';
 import 'package:rotten_tomatoes/features/movies/domain/repositories/movie_repository.dart';
 
-class GetPopularMovie {
+class GetPopularMovies {
   final MovieRepository repository;
 
-  GetPopularMovie(this.repository);
+  GetPopularMovies(this.repository);
 
   Future<Either<Failure, List<Movie>>> call(){
     return repository.getPopularMovies();

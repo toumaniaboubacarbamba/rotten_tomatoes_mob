@@ -12,6 +12,7 @@ class HomePage extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
+        backgroundColor: Colors.red[700],
         title: const Text(
           'Rotten Tomatoes',
           style: TextStyle(fontWeight: FontWeight.bold),

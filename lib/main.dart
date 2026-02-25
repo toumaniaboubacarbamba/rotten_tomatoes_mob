@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rotten_tomatoes/core/di/injection.dart';
 import 'package:rotten_tomatoes/features/movies/presentation/cubit/movies_cubit.dart';
+import 'package:rotten_tomatoes/features/movies/presentation/pages/home_page.dart';
 
 void main() {
   initDependencies(); // on initialise les dépendances avant de lancer l'app
@@ -22,7 +23,7 @@ class MainApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         title: 'Rotten Tomatoes',
         theme: ThemeData.dark(),
-        //home: const HomePage(),
+        home: const HomePage(),
       ),
     );
   }

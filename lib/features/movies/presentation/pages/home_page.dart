@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rotten_tomatoes/features/movies/presentation/cubit/movies_cubit.dart';
 import 'package:rotten_tomatoes/features/movies/presentation/cubit/movies_states.dart';
+import 'package:rotten_tomatoes/features/movies/presentation/widgets/movie_card.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -21,12 +22,11 @@ class HomePage extends StatelessWidget {
       body: BlocBuilder<MoviesCubit, MoviesState>(
         builder: (context, state) {
           // Si l'état est de chargement, on affiche un spinner
-          if(state is MoviesLoading){
+          if (state is MoviesLoading) {
             return const Center(child: CircularProgressIndicator());
           }
-
           // Si l'état est de succès, on affiche la liste des films
-          else if(state is MoviesLoaded) {
+          else if (state is MoviesLoaded) {
             return GridView.builder(
               padding: const EdgeInsets.all(12),
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -36,12 +36,14 @@ class HomePage extends StatelessWidget {
                 mainAxisSpacing: 12,
               ),
               itemCount: state.movies.length,
-              itemBuilder: (context, index){
+              itemBuilder: (context, index) {
                 return MovieCard(movie: state.movies[index]);
-              }
-              );
+              },
+            );
           }
+          return const Center(child: Text('Error loading movies'));
         },
+      ),
     );
   }
 }

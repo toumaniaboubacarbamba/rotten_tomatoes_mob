@@ -16,9 +16,9 @@ class MoviesInitial extends MoviesState {}
 class MoviesLoading extends MoviesState {}
 
 // État de succès, lorsque les films ont été récupérés avec succès
-class MovieLoaded extends MoviesState {
+class MoviesLoaded extends MoviesState {
   final List<Movie> movies;
-  const MovieLoaded(this.movies);
+  const MoviesLoaded(this.movies);
 
   //
   @override

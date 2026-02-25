@@ -20,7 +20,7 @@ class MoviesCubit extends Cubit<MoviesState> {
     //fold() est une méthode de Either qui nous permet de gérer les deux cas : échec (Left) ou succès (Right)
     result.fold(
       (failure) => emit(MoviesError(failure.message)),
-      (movies) => emit(MovieLoaded(movies)),
+      (movies) => emit(MoviesLoaded(movies)),
     );
   }
 }

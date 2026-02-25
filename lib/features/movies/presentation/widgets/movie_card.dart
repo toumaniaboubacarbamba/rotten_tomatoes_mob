@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:rotten_tomatoes/features/movies/domain/entities/movie.dart';
+import 'package:rotten_tomatoes/features/movies/presentation/pages/movie_detail_page.dart';
 
 class MovieCard extends StatelessWidget {
   final Movie movie;

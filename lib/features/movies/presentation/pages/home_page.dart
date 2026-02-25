@@ -41,7 +41,16 @@ class HomePage extends StatelessWidget {
               },
             );
           }
-          return const Center(child: Text('Error loading movies'));
+          if (state is MoviesError) {
+            return Center(
+              child: Text(
+                state.message,
+                style: const TextStyle(color: Colors.red, fontSize: 18),
+              ),
+            );
+          }
+          // Par défaut, on affiche un message d'accueil
+          return const SizedBox.shrink();
         },
       ),
     );

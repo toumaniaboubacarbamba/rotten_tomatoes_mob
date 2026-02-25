@@ -4,6 +4,7 @@ import 'package:equatable/equatable.dart';
 import 'package:rotten_tomatoes/features/movies/domain/entities/movie.dart';
 
 abstract class MoviesState extends Equatable {
+  const MoviesState();
   @override
   List<Object?> get props => [];
 }
@@ -19,7 +20,7 @@ class MovieLoaded extends MoviesState {
   final List<Movie> movies;
   const MovieLoaded(this.movies);
 
-// 
+  //
   @override
   List<Object?> get props => [movies];
 }

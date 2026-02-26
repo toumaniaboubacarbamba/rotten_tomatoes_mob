@@ -1,38 +1,36 @@
 import 'package:equatable/equatable.dart';
-import 'package:rotten_tomatoes/features/auth/domain/entities/user.dart';
+import '../../domain/entities/user.dart';
 
 abstract class AuthState extends Equatable {
   const AuthState();
 
   @override
-  List<Object?> get props => [];
+  List<Object> get props => [];
 }
 
-// Etat initial de l'authentification, avant toute action
+// État initial — on ne sait pas encore si l'utilisateur est connecté
 class AuthInitial extends AuthState {}
 
-// Etat chargement lorsque l'utilisateur tente de se connecter
+// État chargement — pendant le login ou la vérification du cache
 class AuthLoading extends AuthState {}
 
-// Etat lorsque l'utilisateur est connecté avec succès
+// État connecté — on a un utilisateur
 class Authenticated extends AuthState {
   final User user;
-
   const Authenticated(this.user);
 
   @override
-  List<Object?> get props => [user];
+  List<Object> get props => [user];
 }
 
-//Etat lorsque l'utilisateur est deconnecté
+// État déconnecté — pas d'utilisateur
 class Unauthenticated extends AuthState {}
 
-// Etat lorsque la tentative de connexion a échoué
+// État erreur — mauvais identifiants ou problème réseau
 class AuthError extends AuthState {
   final String message;
-
   const AuthError(this.message);
 
   @override
-  List<Object?> get props => [message];
+  List<Object> get props => [message];
 }

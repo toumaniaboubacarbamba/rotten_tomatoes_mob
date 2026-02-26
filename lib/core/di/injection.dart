@@ -24,11 +24,13 @@ Future<void> initDependencies() async {
   sl.registerLazySingleton(() => DioClient());
 
   // Auth
-  sl.registerFactory(() => AuthBloc(
-    loginUseCase: sl(),
-    logoutUseCase: sl(),
-    getCachedUserUseCase: sl(),
-  ));
+  sl.registerFactory(
+    () => AuthBloc(
+      loginUseCase: sl(),
+      logoutUseCase: sl(),
+      getCachedUserUseCase: sl(),
+    ),
+  );
   sl.registerLazySingleton(() => LoginUseCase(sl()));
   sl.registerLazySingleton(() => LogoutUseCase(sl()));
   sl.registerLazySingleton(() => GetCachedUserUseCase(sl()));

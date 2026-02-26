@@ -10,7 +10,7 @@ import 'package:rotten_tomatoes/features/movies/presentation/pages/home_page.dar
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized(); // Nécessaire pour les opérations asynchrones avant runApp
-  initDependencies(); // on initialise les dépendances avant de lancer l'app
+  await initDependencies(); // on initialise les dépendances avant de lancer l'app
   runApp(const MainApp());
 }
 

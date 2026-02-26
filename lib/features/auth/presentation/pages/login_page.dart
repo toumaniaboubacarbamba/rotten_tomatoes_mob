@@ -44,18 +44,20 @@ class _LoginPageState extends State<LoginPage> {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text("Rotten Tomatoes",
-                    style: TextStyle(
-                      color: Colors.redAccent,
-                      fontSize: 32,
-                      fontWeight: FontWeight.bold,
-                    ),),
+                const Text(
+                  "Rotten Tomatoes",
+                  style: TextStyle(
+                    color: Colors.redAccent,
+                    fontSize: 32,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
                 const SizedBox(height: 8),
-                const Text("Connez-vous pour découvrir les meilleurs films !",
-                    style: TextStyle(
-                      color: Colors.white70,
-                      fontSize: 16,
-                    ),),
+                const Text(
+                  "Connectez-vous pour découvrir les meilleurs films !",
+                  style: TextStyle(color: Colors.white70, fontSize: 14),
+                ),
+                const SizedBox(height: 48),
               ],
             ),
           ),

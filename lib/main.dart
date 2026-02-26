@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rotten_tomatoes/core/di/injection.dart';
+import 'package:rotten_tomatoes/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:rotten_tomatoes/features/auth/presentation/bloc/auth_event.dart';
 import 'package:rotten_tomatoes/features/movies/presentation/cubit/movies_cubit.dart';
 import 'package:rotten_tomatoes/features/movies/presentation/pages/home_page.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized(); // Nécessaire pour les opérations asynchrones avant runApp
   initDependencies(); // on initialise les dépendances avant de lancer l'app
   runApp(const MainApp());
 }
@@ -14,11 +17,12 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    //On crée un BlocProvider pour fournir le MoviesCubit à toute l'application
-    return BlocProvider(
-      create: (_) =>
-          sl<MoviesCubit>()
-            ..loadMovies(), // on charge les films dès que le Cubit est créé
+    // On utilise MultiBlocProvider pour injecter tous les Cubits/BLoCs nécessaires à l'application
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(create: (_) => sl<AuthBloc>()..add(AuthCheckRequested())),
+        BlocProvider(create: (_) => sl<MoviesCubit>()),
+      ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         title: 'Rotten Tomatoes',

@@ -25,7 +25,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // on retire la couleur de fond fixe pour exploiter une image
+      backgroundColor: Colors.black,
       body: BlocListener<AuthBloc, AuthState>(
         listener: (context, state) {
           // Affiche une Snackbar en cas d'erreur de connexion
@@ -38,26 +38,13 @@ class _LoginPageState extends State<LoginPage> {
             );
           }
         },
-        child: Stack(
-          fit: StackFit.expand,
-          children: [
-            // image de fond
-            Container(
-              decoration: const BoxDecoration(
-                image: DecorationImage(
-                  image: AssetImage('assets/images/login_bg.jpg'),
-                  fit: BoxFit.cover,
-                ),
-              ),
-            ),
-            // contenu avec zone de sécurité
-            SafeArea(
-              child: Padding(
-                padding: const EdgeInsets.all(24),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
                 const Text(
                   "Rotten Tomatoes",
                   style: TextStyle(

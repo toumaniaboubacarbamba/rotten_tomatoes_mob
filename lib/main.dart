@@ -3,6 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rotten_tomatoes/core/di/injection.dart';
 import 'package:rotten_tomatoes/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:rotten_tomatoes/features/auth/presentation/bloc/auth_event.dart';
+import 'package:rotten_tomatoes/features/auth/presentation/bloc/auth_state.dart';
+import 'package:rotten_tomatoes/features/auth/presentation/pages/login_page.dart';
 import 'package:rotten_tomatoes/features/movies/presentation/cubit/movies_cubit.dart';
 import 'package:rotten_tomatoes/features/movies/presentation/pages/home_page.dart';
 
@@ -27,7 +29,15 @@ class MainApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         title: 'Rotten Tomatoes',
         theme: ThemeData.dark(),
-        home: const HomePage(),
+        // BlocBuilder écoute AuthBloc pour décider quelle page afficher
+        home: BlocBuilder<AuthBloc, AuthState>(
+          builder: (context, state) {
+            if (state is Authenticated) {
+              return const HomePage();
+            }
+            return const LoginPage();
+          },
+        ),
       ),
     );
   }

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:rotten_tomatoes/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:rotten_tomatoes/features/auth/presentation/bloc/auth_event.dart';
 import 'package:rotten_tomatoes/features/movies/presentation/cubit/movies_cubit.dart';
 import 'package:rotten_tomatoes/features/movies/presentation/cubit/movies_states.dart';
 import 'package:rotten_tomatoes/features/movies/presentation/widgets/movie_card.dart';
@@ -17,6 +19,14 @@ class HomePage extends StatelessWidget {
           'Rotten Tomatoes',
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
+        actions: [
+          IconButton(
+            onPressed: () {
+              context.read<AuthBloc>().add(LogoutRequested());
+            },
+            icon: Icon(Icons.logout, color: Colors.white),
+          ),
+        ],
       ),
 
       //BlocBuilder pour écouter les changements d'état du MoviesCubit et afficher les films en conséquence

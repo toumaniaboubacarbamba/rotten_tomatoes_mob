@@ -32,9 +32,19 @@ class MainApp extends StatelessWidget {
         // BlocBuilder écoute AuthBloc pour décider quelle page afficher
         home: BlocBuilder<AuthBloc, AuthState>(
           builder: (context, state) {
+            if (state is AuthLoading || state is AuthInitial) {
+              // Pendant la vérification du cache → écran de chargement
+              return const Scaffold(
+                backgroundColor: Colors.black,
+                body: Center(child: CircularProgressIndicator()),
+              );
+            }
             if (state is Authenticated) {
+              // Connecté → on charge les films et on affiche HomePage
+              context.read<MoviesCubit>().loadMovies();
               return const HomePage();
             }
+            // Pas connecté → LoginPage
             return const LoginPage();
           },
         ),

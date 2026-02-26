@@ -3,12 +3,12 @@ import '../../../../core/error/failures.dart';
 import '../entities/user.dart';
 import '../repositories/auth_repository.dart';
 
-class LoginUseCase {
+class GetCachedUserUseCase {
   final AuthRepository repository;
 
-  LoginUseCase(this.repository);
+  GetCachedUserUseCase(this.repository);
 
-  Future<Either<Failure, User>> call(String username, String password) {
-    return repository.login(username, password);
+  Future<Either<Failure, User>> call() {
+    return repository.getCachedUser();
   }
 }

@@ -1,13 +1,14 @@
 import 'package:dartz/dartz.dart';
-import 'package:rotten_tomatoes/core/error/failures.dart';
+import '../../../../core/error/failures.dart';
+import '../entities/user.dart';
 
 abstract class AuthRepository {
-  //Tente de connecter l'utilisateur avec les identifiants fournis
-  Future<Either<String, Failure>> login(String username, String password);
+  // Tente de connecter l'utilisateur et retourne soit une erreur soit un User
+  Future<Either<Failure, User>> login(String username, String password);
 
-  //Déconnecte l'utilisateur en supprimant les données de cache
-  Future<Either<String, Unit>> logout();
+  // Déconnecte l'utilisateur
+  Future<Either<Failure, Unit>> logout();
 
-  //Verifie si un utilisateur est déjà connecté en vérifiant le cache
-  Future<Either<String, String>> getCacheUser();
+  // Vérifie si un token est déjà sauvegardé localement
+  Future<Either<Failure, User>> getCachedUser();
 }

@@ -12,11 +12,11 @@ class AuthRemoteDataSource {
     await Future.delayed(const Duration(seconds: 2));
 
     // On vérifie les identifiants — dans une vraie app ce serait une requête Dio
-    if (email == 'test@gmail.com' && password == '123456') {
+    if (email == 'yami@gmail.com' && password == 'test123') {
       final user = UserModel(
         id: '1',
         email: email,
-        name: 'Test User',
+        name: 'Yami Sukehiro',
         token: 'fake_token_123',
       );
 

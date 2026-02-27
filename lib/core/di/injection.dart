@@ -9,6 +9,7 @@ import 'package:rotten_tomatoes/features/movies/domain/usecases/toggle_favorite.
 import 'package:rotten_tomatoes/features/movies/presentation/cubit/favorites_cubit.dart';
 import 'package:rotten_tomatoes/features/movies/presentation/cubit/genre_cubit.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:dio/dio.dart';
 import '../../features/auth/data/datasources/auth_remote_data_source.dart';
 import '../../features/auth/data/repositories/auth_repository_impl.dart';
 import '../../features/auth/domain/repositories/auth_repository.dart';

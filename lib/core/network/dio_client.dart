@@ -11,11 +11,11 @@ class DioClient {
         BaseOptions(
           baseUrl: _baseUrl,
           queryParameters: {'api_key': _apiKey, 'language': 'fr-FR'},
-          connectTimeout: const Duration(seconds: 15),
-          receiveTimeout: const Duration(seconds: 15),
+          connectTimeout: const Duration(seconds: 30),
+          receiveTimeout: const Duration(seconds: 30),
         ),
       ) {
-        //Intercepteur pour afficher les requêtes et les réponses dans la console
+    //Intercepteur pour afficher les requêtes et les réponses dans la console
     dio.interceptors.add(LogInterceptor(requestBody: true, responseBody: true));
   }
 }

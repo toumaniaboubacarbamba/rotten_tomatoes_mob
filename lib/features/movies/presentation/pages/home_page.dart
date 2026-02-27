@@ -7,6 +7,7 @@ import 'package:rotten_tomatoes/features/movies/presentation/cubit/movies_cubit.
 import 'package:rotten_tomatoes/features/movies/presentation/cubit/movies_states.dart';
 import 'package:rotten_tomatoes/features/movies/presentation/cubit/search_cubit.dart';
 import 'package:rotten_tomatoes/features/movies/presentation/cubit/search_state.dart';
+import 'package:rotten_tomatoes/features/movies/presentation/pages/favorites_page.dart';
 import 'package:rotten_tomatoes/features/movies/presentation/widgets/movie_card.dart';
 
 class HomePage extends StatelessWidget {
@@ -23,6 +24,15 @@ class HomePage extends StatelessWidget {
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.favorite, color: Colors.white),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const FavoritesPage()),
+              );
+            },
+          ),
           // Bouton profil
           IconButton(
             icon: const Icon(Icons.person, color: Colors.white),

@@ -5,6 +5,7 @@ import 'package:rotten_tomatoes/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:rotten_tomatoes/features/auth/presentation/bloc/auth_event.dart';
 import 'package:rotten_tomatoes/features/auth/presentation/bloc/auth_state.dart';
 import 'package:rotten_tomatoes/features/auth/presentation/pages/login_page.dart';
+import 'package:rotten_tomatoes/features/movies/presentation/cubit/favorites_cubit.dart';
 import 'package:rotten_tomatoes/features/movies/presentation/cubit/movies_cubit.dart';
 import 'package:rotten_tomatoes/features/movies/presentation/cubit/search_cubit.dart';
 import 'package:rotten_tomatoes/features/movies/presentation/pages/home_page.dart';
@@ -26,6 +27,7 @@ class MainApp extends StatelessWidget {
         BlocProvider(create: (_) => sl<AuthBloc>()..add(AuthCheckRequested())),
         BlocProvider(create: (_) => sl<MoviesCubit>()),
         BlocProvider(create: (_) => sl<SearchCubit>()),
+        BlocProvider(create: (_) => sl<FavoritesCubit>()..loadFavorites()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,

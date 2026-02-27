@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:rotten_tomatoes/features/movies/domain/entities/movie.dart';
-import 'package:rotten_tomatoes/features/movies/presentation/pages/movie_detail_page.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../domain/entities/movie.dart';
+import '../cubit/favorites_cubit.dart';
+import '../cubit/favorites_state.dart';
+import '../pages/movie_detail_page.dart';
 
 class MovieCard extends StatelessWidget {
   final Movie movie;
+
   const MovieCard({super.key, required this.movie});
 
   @override
@@ -16,35 +20,24 @@ class MovieCard extends StatelessWidget {
         );
       },
       child: ClipRRect(
-        //coins arrondis pour les cartes de films
         borderRadius: BorderRadius.circular(12),
         child: Stack(
           fit: StackFit.expand,
           children: [
-            // affichage des films chargés depuis l'API
             Image.network(
               movie.posterPath,
               fit: BoxFit.cover,
-
-              // placeholder pendant le chargement de l'image
               loadingBuilder: (context, child, loadingProgress) {
                 if (loadingProgress == null) return child;
                 return Container(color: Colors.grey[900]);
               },
-              // placeholder en cas d'erreur de chargement de l'image
               errorBuilder: (context, error, stackTrace) {
                 return Container(
                   color: Colors.grey[900],
-                  child: const Icon(
-                    Icons.broken_image,
-                    color: Colors.white,
-                    size: 40,
-                  ),
+                  child: const Icon(Icons.broken_image, color: Colors.white),
                 );
               },
             ),
-
-            // overlay pour améliorer la lisibilité du texte
             Positioned(
               bottom: 0,
               left: 0,
@@ -73,15 +66,47 @@ class MovieCard extends StatelessWidget {
                     ),
                     const SizedBox(height: 4),
                     Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        const Icon(Icons.star, color: Colors.amber, size: 14),
-                        const SizedBox(width: 4),
-                        Text(
-                          movie.voteAverage.toStringAsFixed(1),
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 12,
-                          ),
+                        Row(
+                          children: [
+                            const Icon(
+                              Icons.star,
+                              color: Colors.amber,
+                              size: 14,
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              movie.voteAverage.toStringAsFixed(1),
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ],
+                        ),
+
+                        // Bouton favori
+                        BlocBuilder<FavoritesCubit, FavoritesState>(
+                          builder: (context, state) {
+                            // On vérifie si ce film est dans les favoris
+                            final isFavorite =
+                                state is FavoritesLoaded &&
+                                state.movies.any((m) => m.id == movie.id);
+
+                            return GestureDetector(
+                              onTap: () {
+                                context.read<FavoritesCubit>().toggle(movie);
+                              },
+                              child: Icon(
+                                isFavorite
+                                    ? Icons.favorite
+                                    : Icons.favorite_border,
+                                color: isFavorite ? Colors.red : Colors.white,
+                                size: 20,
+                              ),
+                            );
+                          },
                         ),
                       ],
                     ),

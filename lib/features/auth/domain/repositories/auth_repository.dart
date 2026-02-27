@@ -11,4 +11,10 @@ abstract class AuthRepository {
 
   // Vérifie si un token est déjà sauvegardé localement
   Future<Either<Failure, User>> getCachedUser();
+
+  Future<Either<Failure, User>> register(
+    String username,
+    String password,
+    String name,
+  );
 }

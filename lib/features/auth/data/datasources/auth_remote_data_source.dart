@@ -8,10 +8,8 @@ class AuthRemoteDataSource {
   AuthRemoteDataSource(this.sharedPreferences);
 
   Future<UserModel> login(String email, String password) async {
-    // On simule un appel serveur avec un délai de 2 secondes
     await Future.delayed(const Duration(seconds: 2));
 
-    // On vérifie les identifiants — dans une vraie app ce serait une requête Dio
     if (email == 'yami@gmail.com' && password == 'test123') {
       final user = UserModel(
         id: '1',
@@ -19,22 +17,37 @@ class AuthRemoteDataSource {
         name: 'Yami Sukehiro',
         token: 'fake_token_123',
       );
-
-      // On sauvegarde l'utilisateur localement
-      await sharedPreferences.setString(
-        'cached_user',
-        jsonEncode(user.toJson()),
-      );
-
+      await sharedPreferences.setString('cached_user', jsonEncode(user.toJson()));
       return user;
     }
 
-    // Mauvais identifiants → on lance une exception
     throw Exception('Email ou mot de passe incorrect');
   }
 
+  // Simule une inscription — dans une vraie app ce serait un appel Dio
+  Future<UserModel> register(String name, String email, String password) async {
+    await Future.delayed(const Duration(seconds: 2));
+
+    // On vérifie que l'email n'est pas déjà utilisé
+    if (email == 'yami@gmail.com') {
+      throw Exception('Cet email est déjà utilisé');
+    }
+
+    // On crée le nouvel utilisateur
+    final user = UserModel(
+      id: DateTime.now().millisecondsSinceEpoch.toString(),
+      email: email,
+      name: name,
+      token: 'token_${DateTime.now().millisecondsSinceEpoch}',
+    );
+
+    // On sauvegarde localement
+    await sharedPreferences.setString('cached_user', jsonEncode(user.toJson()));
+
+    return user;
+  }
+
   Future<void> logout() async {
-    // On supprime l'utilisateur sauvegardé
     await sharedPreferences.remove('cached_user');
   }
 

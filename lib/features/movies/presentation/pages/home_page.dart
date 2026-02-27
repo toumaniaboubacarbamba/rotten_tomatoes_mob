@@ -3,11 +3,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rotten_tomatoes/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:rotten_tomatoes/features/auth/presentation/bloc/auth_event.dart';
 import 'package:rotten_tomatoes/features/auth/presentation/pages/profil_page.dart';
+import 'package:rotten_tomatoes/features/movies/presentation/cubit/favorites_cubit.dart';
+import 'package:rotten_tomatoes/features/movies/presentation/cubit/favorites_state.dart';
 import 'package:rotten_tomatoes/features/movies/presentation/cubit/movies_cubit.dart';
 import 'package:rotten_tomatoes/features/movies/presentation/cubit/movies_states.dart';
 import 'package:rotten_tomatoes/features/movies/presentation/cubit/search_cubit.dart';
 import 'package:rotten_tomatoes/features/movies/presentation/cubit/search_state.dart';
 import 'package:rotten_tomatoes/features/movies/presentation/pages/favorites_page.dart';
+import 'package:rotten_tomatoes/features/movies/presentation/pages/genre_page.dart';
 import 'package:rotten_tomatoes/features/movies/presentation/widgets/movie_card.dart';
 
 class HomePage extends StatelessWidget {
@@ -25,11 +28,62 @@ class HomePage extends StatelessWidget {
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.favorite, color: Colors.white),
+            icon: const Icon(Icons.category, color: Colors.white),
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (_) => const FavoritesPage()),
+                MaterialPageRoute(builder: (_) => const GenrePage()),
+              );
+            },
+          ),
+          // Afficher l'icône favoris avec un badge indiquant le nombre de films favoris
+          BlocBuilder<FavoritesCubit, FavoritesState>(
+            builder: (context, favState) {
+              int count = 0;
+              if (favState is FavoritesLoaded) {
+                count = favState.movies.length;
+              }
+
+              return Stack(
+                alignment: Alignment.center,
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.favorite, color: Colors.white),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const FavoritesPage(),
+                        ),
+                      );
+                    },
+                  ),
+                  if (count > 0)
+                    Positioned(
+                      right: 8,
+                      top: 8,
+                      child: Container(
+                        padding: const EdgeInsets.all(2),
+                        decoration: BoxDecoration(
+                          color: Colors.red,
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        constraints: const BoxConstraints(
+                          minWidth: 16,
+                          minHeight: 16,
+                        ),
+                        child: Text(
+                          '$count',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 10,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ),
+                ],
               );
             },
           ),

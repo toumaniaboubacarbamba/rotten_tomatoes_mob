@@ -1,6 +1,8 @@
 import 'package:get_it/get_it.dart';
 import 'package:rotten_tomatoes/features/auth/domain/usecases/logout_usercase.dart';
 import 'package:rotten_tomatoes/features/movies/domain/usecases/get_popular_movie.dart';
+import 'package:rotten_tomatoes/features/movies/domain/usecases/search_movies.dart';
+import 'package:rotten_tomatoes/features/movies/presentation/cubit/search_cubit.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../features/auth/data/datasources/auth_remote_data_source.dart';
 import '../../features/auth/data/repositories/auth_repository_impl.dart';
@@ -38,6 +40,8 @@ Future<void> initDependencies() async {
   sl.registerLazySingleton(() => AuthRemoteDataSource(sl()));
 
   // Movies
+  sl.registerFactory(() => SearchMovies(sl()));
+  sl.registerFactory(() => SearchCubit(sl()));
   sl.registerFactory(() => MoviesCubit(sl()));
   sl.registerLazySingleton(() => GetPopularMovies(sl()));
   sl.registerLazySingleton<MovieRepository>(() => MovieRepositoryImpl(sl()));

@@ -4,6 +4,8 @@ import 'package:rotten_tomatoes/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:rotten_tomatoes/features/auth/presentation/bloc/auth_event.dart';
 import 'package:rotten_tomatoes/features/movies/presentation/cubit/movies_cubit.dart';
 import 'package:rotten_tomatoes/features/movies/presentation/cubit/movies_states.dart';
+import 'package:rotten_tomatoes/features/movies/presentation/cubit/search_cubit.dart';
+import 'package:rotten_tomatoes/features/movies/presentation/cubit/search_state.dart';
 import 'package:rotten_tomatoes/features/movies/presentation/widgets/movie_card.dart';
 
 class HomePage extends StatelessWidget {
@@ -30,40 +32,107 @@ class HomePage extends StatelessWidget {
       ),
 
       //BlocBuilder pour écouter les changements d'état du MoviesCubit et afficher les films en conséquence
-      body: BlocBuilder<MoviesCubit, MoviesState>(
-        builder: (context, state) {
-          // Si l'état est de chargement, on affiche un spinner
-          if (state is MoviesLoading) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          // Si l'état est de succès, on affiche la liste des films
-          else if (state is MoviesLoaded) {
-            return GridView.builder(
-              padding: const EdgeInsets.all(12),
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                childAspectRatio: 0.65,
-                crossAxisSpacing: 12,
-                mainAxisSpacing: 12,
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(12),
+            child: TextField(
+              style: const TextStyle(color: Colors.white),
+              decoration: InputDecoration(
+                hintText: 'Rechercher un film...',
+                hintStyle: TextStyle(color: Colors.grey[500]),
+                prefixIcon: const Icon(Icons.search, color: Colors.grey),
+                suffixIcon: IconButton(
+                  onPressed: () {
+                    context.read<SearchCubit>().clearSearch();
+                  },
+                  icon: const Icon(Icons.clear, color: Colors.grey),
+                ),
+                filled: true,
+                fillColor: Colors.grey[900],
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide.none,
+                ),
               ),
-              itemCount: state.movies.length,
-              itemBuilder: (context, index) {
-                return MovieCard(movie: state.movies[index]);
+              onChanged: (query) {
+                context.read<SearchCubit>().search(query);
               },
-            );
-          }
-          if (state is MoviesError) {
-            return Center(
-              child: Text(
-                state.message,
-                style: const TextStyle(color: Colors.red, fontSize: 18),
-              ),
-            );
-          }
-          // Par défaut, on affiche un message d'accueil
-          return const SizedBox.shrink();
-        },
+            ),
+          ),
+          // Contenu — recherche ou liste populaire
+          Expanded(
+            child: BlocBuilder<SearchCubit, SearchState>(
+              builder: (context, searchState) {
+                // Si recherche active → afficher résultats recherche
+                if (searchState is SearchLoading) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+
+                if (searchState is SearchLoaded) {
+                  return _buildGrid(context, searchState.movies);
+                }
+
+                if (searchState is SearchEmpty) {
+                  return const Center(
+                    child: Text(
+                      '🎬 Aucun film trouvé',
+                      style: TextStyle(color: Colors.grey),
+                    ),
+                  );
+                }
+
+                if (searchState is SearchError) {
+                  return Center(
+                    child: Text(
+                      searchState.message,
+                      style: const TextStyle(color: Colors.red),
+                    ),
+                  );
+                }
+
+                // Sinon → afficher films populaires
+                return BlocBuilder<MoviesCubit, MoviesState>(
+                  builder: (context, moviesState) {
+                    if (moviesState is MoviesLoading) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+                    if (moviesState is MoviesLoaded) {
+                      return _buildGrid(context, moviesState.movies);
+                    }
+                    if (moviesState is MoviesError) {
+                      return Center(
+                        child: Text(
+                          moviesState.message,
+                          style: const TextStyle(color: Colors.red),
+                        ),
+                      );
+                    }
+                    return const SizedBox.shrink();
+                  },
+                );
+              },
+            ),
+          ),
+        ],
       ),
+    );
+  }
+
+  // Widget réutilisable pour afficher une grille de films
+  Widget _buildGrid(BuildContext context, movies) {
+    return GridView.builder(
+      padding: const EdgeInsets.all(12),
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        childAspectRatio: 0.65,
+        crossAxisSpacing: 12,
+        mainAxisSpacing: 12,
+      ),
+      itemCount: movies.length,
+      itemBuilder: (context, index) {
+        return MovieCard(movie: movies[index]);
+      },
     );
   }
 }

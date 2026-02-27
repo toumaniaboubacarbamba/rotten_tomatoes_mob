@@ -38,4 +38,14 @@ class AuthRepositoryImpl implements AuthRepository {
       return Left(CacheFailure('Aucun utilisateur connecté'));
     }
   }
+
+  @override
+  Future<Either<Failure, User>> register(String email, String password, String name) async {
+    try {
+      final user = await remoteDataSource.register(email, password, name);
+      return Right(user);
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
+    }
+  }
 }

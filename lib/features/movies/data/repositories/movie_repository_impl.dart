@@ -14,9 +14,9 @@ class MovieRepositoryImpl implements MovieRepository {
   MovieRepositoryImpl(this.remoteDataSource, this.localDataSource);
 
   @override
-  Future<Either<Failure, List<Movie>>> getPopularMovies() async {
+  Future<Either<Failure, List<Movie>>> getPopularMovies({int page = 1}) async {
     try {
-      final movies = await remoteDataSource.getPopularMovies();
+      final movies = await remoteDataSource.getPopularMovies(page: page);
       return Right(movies);
     } on DioException catch (e) {
       return Left(ServerFailure(e.message ?? 'Erreur serveur'));

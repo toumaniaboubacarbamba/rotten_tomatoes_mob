@@ -7,8 +7,12 @@ class MovieRemoteDataSource {
 
   MovieRemoteDataSource(this.dioClient);
 
-  Future<List<MovieModel>> getPopularMovies() async {
-    final response = await dioClient.dio.get('/movie/popular');
+  // On ajoute le paramètre page
+  Future<List<MovieModel>> getPopularMovies({int page = 1}) async {
+    final response = await dioClient.dio.get(
+      '/movie/popular',
+      queryParameters: {'page': page},
+    );
     final List results = response.data['results'];
     return results.map((json) => MovieModel.fromJson(json)).toList();
   }
@@ -22,7 +26,6 @@ class MovieRemoteDataSource {
     return results.map((json) => MovieModel.fromJson(json)).toList();
   }
 
-  // Récupère tous les genres depuis TMDB
   Future<List<Genre>> getGenres() async {
     final response = await dioClient.dio.get('/genre/movie/list');
     final List genres = response.data['genres'];
@@ -31,7 +34,6 @@ class MovieRemoteDataSource {
         .toList();
   }
 
-  // Récupère les films d'un genre précis
   Future<List<MovieModel>> getMoviesByGenre(int genreId) async {
     final response = await dioClient.dio.get(
       '/discover/movie',

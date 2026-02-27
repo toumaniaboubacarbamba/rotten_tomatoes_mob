@@ -13,8 +13,36 @@ import 'package:rotten_tomatoes/features/movies/presentation/pages/favorites_pag
 import 'package:rotten_tomatoes/features/movies/presentation/pages/genre_page.dart';
 import 'package:rotten_tomatoes/features/movies/presentation/widgets/movie_card.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({super.key});
+
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  final _scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    // On écoute le scroll pour détecter la fin de liste
+    _scrollController.addListener(_onScroll);
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _onScroll() {
+    // Si on est à 200px de la fin → on charge la page suivante
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent - 200) {
+      context.read<MoviesCubit>().loadMoreMovies();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -166,23 +194,62 @@ class HomePage extends StatelessWidget {
                   );
                 }
 
-                // Sinon → afficher films populaires
+                // Films populaires avec pagination
                 return BlocBuilder<MoviesCubit, MoviesState>(
-                  builder: (context, moviesState) {
-                    if (moviesState is MoviesLoading) {
+                  builder: (context, state) {
+                    if (state is MoviesLoading) {
                       return const Center(child: CircularProgressIndicator());
                     }
-                    if (moviesState is MoviesLoaded) {
-                      return _buildGrid(context, moviesState.movies);
-                    }
-                    if (moviesState is MoviesError) {
+
+                    if (state is MoviesError) {
                       return Center(
                         child: Text(
-                          moviesState.message,
+                          state.message,
                           style: const TextStyle(color: Colors.red),
                         ),
                       );
                     }
+
+                    if (state is MoviesLoaded || state is MoviesLoadingMore) {
+                      final movies = state is MoviesLoaded
+                          ? state.movies
+                          : (state as MoviesLoadingMore).movies;
+
+                      return CustomScrollView(
+                        controller: _scrollController,
+                        slivers: [
+                          SliverPadding(
+                            padding: const EdgeInsets.all(12),
+                            sliver: SliverGrid(
+                              gridDelegate:
+                                  const SliverGridDelegateWithFixedCrossAxisCount(
+                                    crossAxisCount: 2,
+                                    childAspectRatio: 0.65,
+                                    crossAxisSpacing: 12,
+                                    mainAxisSpacing: 12,
+                                  ),
+                              delegate: SliverChildBuilderDelegate(
+                                (context, index) =>
+                                    MovieCard(movie: movies[index]),
+                                childCount: movies.length,
+                              ),
+                            ),
+                          ),
+
+                          // Spinner en bas pendant le chargement de la page suivante
+                          if (state is MoviesLoadingMore)
+                            const SliverToBoxAdapter(
+                              child: Padding(
+                                padding: EdgeInsets.all(16),
+                                child: Center(
+                                  child: CircularProgressIndicator(),
+                                ),
+                              ),
+                            ),
+                        ],
+                      );
+                    }
+
                     return const SizedBox.shrink();
                   },
                 );

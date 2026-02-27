@@ -1,35 +1,46 @@
-// Les états de l'application concernant les films
-
 import 'package:equatable/equatable.dart';
-import 'package:rotten_tomatoes/features/movies/domain/entities/movie.dart';
+import '../../domain/entities/movie.dart';
 
 abstract class MoviesState extends Equatable {
   const MoviesState();
+
   @override
-  List<Object?> get props => [];
+  List<Object> get props => [];
 }
 
-// État initial, avant de charger les films
 class MoviesInitial extends MoviesState {}
 
-// État de chargement, pendant que les films sont en train d'être récupérés
 class MoviesLoading extends MoviesState {}
 
-// État de succès, lorsque les films ont été récupérés avec succès
-class MoviesLoaded extends MoviesState {
+// pagination
+// On garde les films existants visibles pendant le chargement
+class MoviesLoadingMore extends MoviesState {
   final List<Movie> movies;
-  const MoviesLoaded(this.movies);
+  const MoviesLoadingMore(this.movies);
 
-  //
   @override
-  List<Object?> get props => [movies];
+  List<Object> get props => [movies];
 }
 
-// État d'erreur, lorsque la récupération des films a échoué
+class MoviesLoaded extends MoviesState {
+  final List<Movie> movies;
+  final int currentPage;
+  final bool hasReachedMax; // true = plus de films à charger
+
+  const MoviesLoaded({
+    required this.movies,
+    required this.currentPage,
+    this.hasReachedMax = false,
+  });
+
+  @override
+  List<Object> get props => [movies, currentPage, hasReachedMax];
+}
+
 class MoviesError extends MoviesState {
   final String message;
   const MoviesError(this.message);
 
   @override
-  List<Object?> get props => [message];
+  List<Object> get props => [message];
 }

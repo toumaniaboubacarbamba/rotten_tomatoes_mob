@@ -31,12 +31,12 @@ class FavoriteRemoteDataSource {
     return data
         .map(
           (json) => MovieModel(
-            // On force en int avec toInt()
-            id: (json['movie_id'] as num).toInt(),
+            // On convertit la String en int
+            id: int.parse(json['movie_id'].toString()),
             title: json['title'] ?? '',
             overview: json['overview'] ?? '',
             posterPath: json['poster_path'] ?? '',
-            voteAverage: (json['vote_average'] as num).toDouble(),
+            voteAverage: double.parse(json['vote_average'].toString()),
           ),
         )
         .toList();

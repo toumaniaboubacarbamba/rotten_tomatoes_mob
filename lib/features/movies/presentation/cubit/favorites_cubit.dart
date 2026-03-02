@@ -1,30 +1,45 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
 import '../../domain/entities/movie.dart';
 import '../../domain/usecases/get_favorites.dart';
 import '../../domain/usecases/toggle_favorite.dart';
 import 'favorites_state.dart';
 
 class FavoritesCubit extends Cubit<FavoritesState> {
-  final GetFavorites getFavorites;
-  final ToggleFavorite toggleFavorite;
+  final GetFavorites getFavoritesUseCase;
+  final ToggleFavorite toggleFavoriteUseCase;
+  final SharedPreferences sharedPreferences;
 
-  FavoritesCubit({required this.getFavorites, required this.toggleFavorite})
-    : super(FavoritesInitial());
+  FavoritesCubit({
+    required this.getFavoritesUseCase,
+    required this.toggleFavoriteUseCase,
+    required this.sharedPreferences,
+  }) : super(FavoritesInitial());
 
-  // Charge tous les favoris
+  // Récupère le token depuis SharedPreferences
+  String _getToken() {
+    final userJson = sharedPreferences.getString('cached_user');
+    if (userJson != null) {
+      final user = jsonDecode(userJson);
+      return user['token'];
+    }
+    return '';
+  }
+
   Future<void> loadFavorites() async {
     emit(FavoritesLoading());
-    final result = await getFavorites();
+    final token = _getToken();
+    final result = await getFavoritesUseCase(token);
     result.fold(
       (failure) => emit(FavoritesError(failure.message)),
       (movies) => emit(FavoritesLoaded(movies)),
     );
   }
 
-  // Ajoute ou retire un film des favoris
   Future<void> toggle(Movie movie) async {
-    await toggleFavorite(movie);
-    // On recharge la liste après chaque toggle
+    final token = _getToken();
+    await toggleFavoriteUseCase(movie, token);
     await loadFavorites();
   }
 }

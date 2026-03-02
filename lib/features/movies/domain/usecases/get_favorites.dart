@@ -5,10 +5,9 @@ import '../repositories/movie_repository.dart';
 
 class GetFavorites {
   final MovieRepository repository;
-
   GetFavorites(this.repository);
 
-  Future<Either<Failure, List<Movie>>> call() {
-    return repository.getFavorites();
+  Future<Either<Failure, List<Movie>>> call(String token) {
+    return repository.getFavorites(token);
   }
 }

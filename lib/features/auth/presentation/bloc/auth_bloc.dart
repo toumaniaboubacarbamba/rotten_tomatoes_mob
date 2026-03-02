@@ -10,18 +10,18 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final LoginUseCase loginUseCase;
   final LogoutUseCase logoutUseCase;
   final GetCachedUserUseCase getCachedUserUseCase;
-  final RegisterUseCase registerUseCase; // ← nouveau
+  final RegisterUseCase registerUseCase;
 
   AuthBloc({
     required this.loginUseCase,
     required this.logoutUseCase,
     required this.getCachedUserUseCase,
-    required this.registerUseCase, // ← nouveau
+    required this.registerUseCase,
   }) : super(AuthInitial()) {
     on<AuthCheckRequested>(_onAuthCheckRequested);
     on<LoginRequested>(_onLoginRequested);
     on<LogoutRequested>(_onLogoutRequested);
-    on<RegisterRequested>(_onRegisterRequested); // ← nouveau
+    on<RegisterRequested>(_onRegisterRequested);
   }
 
   Future<void> _onAuthCheckRequested(

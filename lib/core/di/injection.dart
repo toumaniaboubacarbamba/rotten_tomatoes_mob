@@ -1,5 +1,6 @@
 import 'package:get_it/get_it.dart';
 import 'package:rotten_tomatoes/features/auth/domain/usecases/logout_usercase.dart';
+import 'package:rotten_tomatoes/features/movies/data/datasources/favorite_remote_data_source.dart';
 import 'package:rotten_tomatoes/features/movies/data/datasources/movie_local_data_source.dart';
 import 'package:rotten_tomatoes/features/movies/domain/usecases/get_favorites.dart';
 import 'package:rotten_tomatoes/features/movies/domain/usecases/get_genres.dart';
@@ -50,23 +51,25 @@ Future<void> initDependencies() async {
   sl.registerLazySingleton(() => AuthRemoteDataSource(sl()));
 
   // Movies
-  // Movies — remplace les lignes existantes
   sl.registerFactory(() => MoviesCubit(sl()));
   sl.registerFactory(() => SearchCubit(sl()));
+  sl.registerFactory(
+    () => FavoritesCubit(
+      getFavoritesUseCase: sl(),
+      toggleFavoriteUseCase: sl(),
+      sharedPreferences: sl(),
+    ),
+  );
+  sl.registerFactory(() => GenreCubit(getGenres: sl(), getMoviesByGenre: sl()));
   sl.registerLazySingleton(() => GetPopularMovies(sl()));
   sl.registerLazySingleton(() => SearchMovies(sl()));
-  sl.registerLazySingleton(() => ToggleFavorite(sl()));
   sl.registerLazySingleton(() => GetFavorites(sl()));
-  sl.registerLazySingleton<MovieRepository>(
-    () => MovieRepositoryImpl(sl(), sl()),
-  ); // ← sl() pour LocalDataSource
-  sl.registerLazySingleton(() => MovieRemoteDataSource(sl()));
-  sl.registerLazySingleton(() => MovieLocalDataSource(sl()));
-  sl.registerFactory(
-    () => FavoritesCubit(getFavorites: sl(), toggleFavorite: sl()),
-  );
-  // Dans initDependencies() — section Movies
-  sl.registerFactory(() => GenreCubit(getGenres: sl(), getMoviesByGenre: sl()));
+  sl.registerLazySingleton(() => ToggleFavorite(sl()));
   sl.registerLazySingleton(() => GetGenres(sl()));
   sl.registerLazySingleton(() => GetMoviesByGenre(sl()));
+  sl.registerLazySingleton<MovieRepository>(
+    () => MovieRepositoryImpl(sl(), sl()),
+  );
+  sl.registerLazySingleton(() => MovieRemoteDataSource(sl()));
+  sl.registerLazySingleton(() => FavoriteRemoteDataSource());
 }

@@ -4,14 +4,14 @@ import '../../../../core/error/failures.dart';
 import '../../domain/entities/genre.dart';
 import '../../domain/entities/movie.dart';
 import '../../domain/repositories/movie_repository.dart';
-import '../datasources/movie_local_data_source.dart';
+import '../datasources/favorite_remote_data_source.dart';
 import '../datasources/movie_remote_data_source.dart';
 
 class MovieRepositoryImpl implements MovieRepository {
   final MovieRemoteDataSource remoteDataSource;
-  final MovieLocalDataSource localDataSource;
+  final FavoriteRemoteDataSource favoriteDataSource;
 
-  MovieRepositoryImpl(this.remoteDataSource, this.localDataSource);
+  MovieRepositoryImpl(this.remoteDataSource, this.favoriteDataSource);
 
   @override
   Future<Either<Failure, List<Movie>>> getPopularMovies({int page = 1}) async {
@@ -34,26 +34,6 @@ class MovieRepositoryImpl implements MovieRepository {
   }
 
   @override
-  Future<Either<Failure, bool>> toggleFavorite(Movie movie) async {
-    try {
-      final result = await localDataSource.toggleFavorite(movie);
-      return Right(result);
-    } catch (e) {
-      return Left(CacheFailure(e.toString()));
-    }
-  }
-
-  @override
-  Future<Either<Failure, List<Movie>>> getFavorites() async {
-    try {
-      final movies = await localDataSource.getFavorites();
-      return Right(movies);
-    } catch (e) {
-      return Left(CacheFailure(e.toString()));
-    }
-  }
-
-  @override
   Future<Either<Failure, List<Genre>>> getGenres() async {
     try {
       final genres = await remoteDataSource.getGenres();
@@ -67,6 +47,29 @@ class MovieRepositoryImpl implements MovieRepository {
   Future<Either<Failure, List<Movie>>> getMoviesByGenre(int genreId) async {
     try {
       final movies = await remoteDataSource.getMoviesByGenre(genreId);
+      return Right(movies);
+    } on DioException catch (e) {
+      return Left(ServerFailure(e.message ?? 'Erreur serveur'));
+    }
+  }
+
+  @override
+  Future<Either<Failure, bool>> toggleFavorite(
+    Movie movie,
+    String token,
+  ) async {
+    try {
+      final result = await favoriteDataSource.toggleFavorite(token, movie);
+      return Right(result);
+    } on DioException catch (e) {
+      return Left(ServerFailure(e.message ?? 'Erreur serveur'));
+    }
+  }
+
+  @override
+  Future<Either<Failure, List<Movie>>> getFavorites(String token) async {
+    try {
+      final movies = await favoriteDataSource.getFavorites(token);
       return Right(movies);
     } on DioException catch (e) {
       return Left(ServerFailure(e.message ?? 'Erreur serveur'));

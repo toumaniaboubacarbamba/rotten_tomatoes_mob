@@ -1,13 +1,36 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../movies/presentation/cubit/favorites_cubit.dart';
+import '../../../movies/presentation/cubit/favorites_state.dart';
+import '../../../movies/presentation/pages/favorites_page.dart';
 import '../bloc/auth_bloc.dart';
 import '../bloc/auth_event.dart';
 import '../bloc/auth_state.dart';
-import '../../../movies/presentation/pages/home_page.dart';
-import '../../../auth/presentation/pages/login_page.dart';
+import '../pages/login_page.dart';
 
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
+
+  // Formate la date ex: "2026-02-27T15:18:23.000000Z" → "27 Feb 2026"
+  String _formatDate(String? dateStr) {
+    if (dateStr == null) return 'Inconnue';
+    final date = DateTime.parse(dateStr);
+    const months = [
+      'Jan',
+      'Fév',
+      'Mar',
+      'Avr',
+      'Mai',
+      'Jun',
+      'Jul',
+      'Aoû',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Déc',
+    ];
+    return '${date.day} ${months[date.month - 1]} ${date.year}';
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -28,23 +51,20 @@ class ProfilePage extends StatelessWidget {
         },
         child: BlocBuilder<AuthBloc, AuthState>(
           builder: (context, state) {
-            // On récupère l'utilisateur depuis l'état Authenticated
             if (state is! Authenticated) return const SizedBox.shrink();
-
             final user = state.user;
 
-            return Padding(
+            return SingleChildScrollView(
               padding: const EdgeInsets.all(24),
               child: Column(
                 children: [
-                  const SizedBox(height: 32),
+                  const SizedBox(height: 24),
 
                   // Avatar avec initiales
                   CircleAvatar(
                     radius: 50,
                     backgroundColor: Colors.red,
                     child: Text(
-                      // On prend la première lettre du nom
                       user.name.isNotEmpty ? user.name[0].toUpperCase() : '?',
                       style: const TextStyle(
                         fontSize: 40,
@@ -53,7 +73,7 @@ class ProfilePage extends StatelessWidget {
                       ),
                     ),
                   ),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 16),
 
                   // Nom
                   Text(
@@ -64,24 +84,61 @@ class ProfilePage extends StatelessWidget {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 4),
 
                   // Email
                   Text(
                     user.email,
-                    style: TextStyle(color: Colors.grey[400], fontSize: 16),
+                    style: TextStyle(color: Colors.grey[400], fontSize: 14),
                   ),
-                  const SizedBox(height: 48),
+                  const SizedBox(height: 32),
 
-                  // Infos utilisateur
+                  // Stats
+                  BlocBuilder<FavoritesCubit, FavoritesState>(
+                    builder: (context, favState) {
+                      final favCount = favState is FavoritesLoaded
+                          ? favState.movies.length
+                          : 0;
+
+                      return Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: [
+                          _buildStat(
+                            '❤️',
+                            favCount.toString(),
+                            'Favoris',
+                            onTap: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => const FavoritesPage(),
+                              ),
+                            ),
+                          ),
+                        ],
+                      );
+                    },
+                  ),
+                  const SizedBox(height: 32),
+
+                  // Infos du compte
                   _buildInfoCard(
-                    icon: Icons.badge,
-                    label: 'ID',
-                    value: user.id,
+                    icon: Icons.person,
+                    label: 'Nom complet',
+                    value: user.name,
                   ),
                   const SizedBox(height: 12),
-
-                  const SizedBox(height: 48),
+                  _buildInfoCard(
+                    icon: Icons.email,
+                    label: 'Email',
+                    value: user.email,
+                  ),
+                  const SizedBox(height: 12),
+                  _buildInfoCard(
+                    icon: Icons.calendar_today,
+                    label: 'Membre depuis',
+                    value: _formatDate(user.createdAt),
+                  ),
+                  const SizedBox(height: 40),
 
                   // Bouton déconnexion
                   SizedBox(
@@ -102,9 +159,8 @@ class ProfilePage extends StatelessWidget {
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      onPressed: () {
-                        context.read<AuthBloc>().add(LogoutRequested());
-                      },
+                      onPressed: () =>
+                          context.read<AuthBloc>().add(LogoutRequested()),
                     ),
                   ),
                 ],
@@ -116,7 +172,42 @@ class ProfilePage extends StatelessWidget {
     );
   }
 
-  // Widget réutilisable pour afficher une info
+  Widget _buildStat(
+    String emoji,
+    String count,
+    String label, {
+    VoidCallback? onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+        decoration: BoxDecoration(
+          color: Colors.grey[900],
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Column(
+          children: [
+            Text(emoji, style: const TextStyle(fontSize: 24)),
+            const SizedBox(height: 4),
+            Text(
+              count,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            Text(
+              label,
+              style: TextStyle(color: Colors.grey[400], fontSize: 12),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _buildInfoCard({
     required IconData icon,
     required String label,

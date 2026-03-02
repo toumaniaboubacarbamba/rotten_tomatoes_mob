@@ -5,12 +5,14 @@ class User extends Equatable {
   final String email;
   final String name;
   final String token;
+  final String? createdAt;
 
   const User({
     required this.id,
     required this.email,
     required this.name,
     required this.token,
+    this.createdAt,
   });
 
   @override

@@ -31,7 +31,6 @@ class FavoriteRemoteDataSource {
     return data
         .map(
           (json) => MovieModel(
-            // On convertit la String en int
             id: int.parse(json['movie_id'].toString()),
             title: json['title'] ?? '',
             overview: json['overview'] ?? '',

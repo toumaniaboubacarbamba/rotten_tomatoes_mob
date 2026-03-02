@@ -1,4 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Permission Internet obligatoire pour les appels API -->
+    <uses-permission android:name="android.permission.INTERNET" />
     <application
         android:label="rotten_tomatoes"
         android:name="${applicationName}"

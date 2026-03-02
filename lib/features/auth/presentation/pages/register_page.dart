@@ -175,7 +175,43 @@ class _RegisterPageState extends State<RegisterPage> {
                             onPressed: state is AuthLoading
                                 ? null
                                 : () {
-                                    // On vérifie que les passwords correspondent
+                                    // Vérification email format
+                                    final emailRegex = RegExp(
+                                      r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$',
+                                    );
+                                    if (!emailRegex.hasMatch(
+                                      _emailController.text.trim(),
+                                    )) {
+                                      ScaffoldMessenger.of(
+                                        context,
+                                      ).showSnackBar(
+                                        const SnackBar(
+                                          content: Text(
+                                            'Adresse email invalide !',
+                                          ),
+                                          backgroundColor: Colors.red,
+                                        ),
+                                      );
+                                      return;
+                                    }
+
+                                    // Vérification mot de passe longueur minimum
+                                    if (_passwordController.text.trim().length <
+                                        6) {
+                                      ScaffoldMessenger.of(
+                                        context,
+                                      ).showSnackBar(
+                                        const SnackBar(
+                                          content: Text(
+                                            'Le mot de passe doit contenir au moins 6 caractères !',
+                                          ),
+                                          backgroundColor: Colors.red,
+                                        ),
+                                      );
+                                      return;
+                                    }
+
+                                    // Vérification que les passwords correspondent
                                     if (_passwordController.text !=
                                         _passwordConfirmController.text) {
                                       ScaffoldMessenger.of(
@@ -193,10 +229,10 @@ class _RegisterPageState extends State<RegisterPage> {
 
                                     context.read<AuthBloc>().add(
                                       RegisterRequested(
+                                        name: _nameController.text.trim(),
                                         email: _emailController.text.trim(),
                                         password: _passwordController.text
                                             .trim(),
-                                        name: _nameController.text.trim(),
                                       ),
                                     );
                                   },

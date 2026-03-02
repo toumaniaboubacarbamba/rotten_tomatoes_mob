@@ -41,7 +41,7 @@ class _RegisterPageState extends State<RegisterPage> {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(state.message),
-                backgroundColor: Colors.red,
+                backgroundColor: Colors.orangeAccent,
               ),
             );
           }
@@ -189,7 +189,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                           content: Text(
                                             'Adresse email invalide !',
                                           ),
-                                          backgroundColor: Colors.red,
+                                          backgroundColor: Colors.orangeAccent,
                                         ),
                                       );
                                       return;
@@ -205,7 +205,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                           content: Text(
                                             'Le mot de passe doit contenir au moins 6 caractères !',
                                           ),
-                                          backgroundColor: Colors.red,
+                                          backgroundColor: Colors.orangeAccent,
                                         ),
                                       );
                                       return;
@@ -221,7 +221,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                           content: Text(
                                             'Les mots de passe ne correspondent pas !',
                                           ),
-                                          backgroundColor: Colors.red,
+                                          backgroundColor: Colors.orangeAccent,
                                         ),
                                       );
                                       return;
@@ -261,3 +261,4 @@ class _RegisterPageState extends State<RegisterPage> {
     );
   }
 }
+

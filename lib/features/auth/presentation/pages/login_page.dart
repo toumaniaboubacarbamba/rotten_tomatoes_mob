@@ -41,7 +41,9 @@ class _LoginPageState extends State<LoginPage> {
         },
         child: SafeArea(
           child: SingleChildScrollView(
-            child: Center(
+            child: SizedBox(
+              // On force la hauteur minimale à l'écran complet
+              height: MediaQuery.of(context).size.height,
               child: Padding(
                 padding: const EdgeInsets.all(24),
                 child: Column(
@@ -146,26 +148,18 @@ class _LoginPageState extends State<LoginPage> {
                       },
                     ),
                     const SizedBox(height: 16),
-                    Center(
-                      child: Text(
-                        'yami@gmail.com /test123',
-                        style: TextStyle(color: Colors.grey[600], fontSize: 12),
-                      ),
-                    ),
-                    Center(
-                      child: TextButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => const RegisterPage(),
-                            ),
-                          );
-                        },
-                        child: const Text(
-                          "Pas de compte ? S'inscrire",
-                          style: TextStyle(color: Colors.grey),
-                        ),
+                    TextButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const RegisterPage(),
+                          ),
+                        );
+                      },
+                      child: const Text(
+                        "Pas de compte ? S'inscrire",
+                        style: TextStyle(color: Colors.grey),
                       ),
                     ),
                   ],

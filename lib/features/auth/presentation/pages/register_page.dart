@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rotten_tomatoes/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:rotten_tomatoes/features/auth/presentation/bloc/auth_event.dart';
 import 'package:rotten_tomatoes/features/auth/presentation/bloc/auth_state.dart';
+import '../../../../features/movies/presentation/pages/home_page.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -44,10 +45,18 @@ class _RegisterPageState extends State<RegisterPage> {
               ),
             );
           }
+          if (state is Authenticated) {
+            Navigator.of(context).pushAndRemoveUntil(
+              MaterialPageRoute(builder: (_) => const HomePage()),
+              (route) => false,
+            );
+          }
         },
         child: SafeArea(
           child: SingleChildScrollView(
-            child: Center(
+            child: SizedBox(
+              // On force la hauteur minimale à l'écran complet
+              height: MediaQuery.of(context).size.height,
               child: Padding(
                 padding: const EdgeInsets.all(24),
                 child: Column(

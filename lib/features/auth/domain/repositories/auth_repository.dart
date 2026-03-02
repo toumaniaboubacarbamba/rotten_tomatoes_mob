@@ -12,9 +12,14 @@ abstract class AuthRepository {
   // Vérifie si un token est déjà sauvegardé localement
   Future<Either<Failure, User>> getCachedUser();
 
+  /// Enregistre un nouvel utilisateur auprès de l'API.
+  ///
+  /// Les paramètres sont dans l'ordre logique utilisé depuis l'UI : **nom**,
+  /// **email** puis **mot de passe**. Le code métier se charge ensuite de
+  /// transmettre ces valeurs dans le bon ordre au datasource.
   Future<Either<Failure, User>> register(
-    String username,
-    String password,
     String name,
+    String email,
+    String password,
   );
 }

@@ -148,18 +148,20 @@ class _LoginPageState extends State<LoginPage> {
                       },
                     ),
                     const SizedBox(height: 16),
-                    TextButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => const RegisterPage(),
-                          ),
-                        );
-                      },
-                      child: const Text(
-                        "Pas de compte ? S'inscrire",
-                        style: TextStyle(color: Colors.grey),
+                    Center(
+                      child: TextButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const RegisterPage(),
+                            ),
+                          );
+                        },
+                        child: const Text(
+                          "Pas de compte ? S'inscrire",
+                          style: TextStyle(color: Colors.grey),
+                        ),
                       ),
                     ),
                   ],

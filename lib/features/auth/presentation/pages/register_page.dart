@@ -175,7 +175,46 @@ class _RegisterPageState extends State<RegisterPage> {
                             onPressed: state is AuthLoading
                                 ? null
                                 : () {
-                                    // Vérification email format
+                                    // Validation nom — lettres et espaces uniquement
+                                    final nameRegex = RegExp(
+                                      r'^[a-zA-ZàâäéèêëîïôöùûüÿçÀÂÄÉÈÊËÎÏÔÖÙÛÜŸÇ\s]+$',
+                                    );
+                                    if (_nameController.text.trim().isEmpty) {
+                                      ScaffoldMessenger.of(
+                                        context,
+                                      ).showSnackBar(
+                                        const SnackBar(
+                                          content: Text(
+                                            'Le nom est obligatoire !',
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                            ),
+                                          ),
+                                          backgroundColor: Colors.red,
+                                        ),
+                                      );
+                                      return;
+                                    }
+                                    if (!nameRegex.hasMatch(
+                                      _nameController.text.trim(),
+                                    )) {
+                                      ScaffoldMessenger.of(
+                                        context,
+                                      ).showSnackBar(
+                                        const SnackBar(
+                                          content: Text(
+                                            'Le nom ne doit contenir que des lettres !',
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                            ),
+                                          ),
+                                          backgroundColor: Colors.red,
+                                        ),
+                                      );
+                                      return;
+                                    }
+
+                                    // Validation email
                                     final emailRegex = RegExp(
                                       r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$',
                                     );
@@ -188,14 +227,17 @@ class _RegisterPageState extends State<RegisterPage> {
                                         const SnackBar(
                                           content: Text(
                                             'Adresse email invalide !',
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                            ),
                                           ),
-                                          backgroundColor: Colors.orangeAccent,
+                                          backgroundColor: Colors.red,
                                         ),
                                       );
                                       return;
                                     }
 
-                                    // Vérification mot de passe longueur minimum
+                                    // Validation mot de passe
                                     if (_passwordController.text.trim().length <
                                         6) {
                                       ScaffoldMessenger.of(
@@ -204,14 +246,17 @@ class _RegisterPageState extends State<RegisterPage> {
                                         const SnackBar(
                                           content: Text(
                                             'Le mot de passe doit contenir au moins 6 caractères !',
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                            ),
                                           ),
-                                          backgroundColor: Colors.orangeAccent,
+                                          backgroundColor: Colors.red,
                                         ),
                                       );
                                       return;
                                     }
 
-                                    // Vérification que les passwords correspondent
+                                    // Validation confirmation mot de passe
                                     if (_passwordController.text !=
                                         _passwordConfirmController.text) {
                                       ScaffoldMessenger.of(
@@ -220,8 +265,11 @@ class _RegisterPageState extends State<RegisterPage> {
                                         const SnackBar(
                                           content: Text(
                                             'Les mots de passe ne correspondent pas !',
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                            ),
                                           ),
-                                          backgroundColor: Colors.orangeAccent,
+                                          backgroundColor: Colors.red,
                                         ),
                                       );
                                       return;
@@ -261,4 +309,3 @@ class _RegisterPageState extends State<RegisterPage> {
     );
   }
 }
-

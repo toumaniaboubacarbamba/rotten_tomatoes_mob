@@ -3,6 +3,8 @@ import 'package:rotten_tomatoes/features/auth/domain/usecases/logout_usercase.da
 import '../../domain/usecases/get_cached_user_usecase.dart';
 import '../../domain/usecases/login_usecase.dart';
 import '../../domain/usecases/register_usecase.dart';
+import '../../domain/usecases/update_password_usecase.dart';
+import '../../domain/usecases/update_profile_usecase.dart';
 import 'auth_event.dart';
 import 'auth_state.dart';
 
@@ -11,17 +13,23 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final LogoutUseCase logoutUseCase;
   final GetCachedUserUseCase getCachedUserUseCase;
   final RegisterUseCase registerUseCase;
+  final UpdateProfileUseCase updateProfileUseCase;
+  final UpdatePasswordUseCase updatePasswordUseCase;
 
   AuthBloc({
     required this.loginUseCase,
     required this.logoutUseCase,
     required this.getCachedUserUseCase,
     required this.registerUseCase,
+    required this.updateProfileUseCase,
+    required this.updatePasswordUseCase,
   }) : super(AuthInitial()) {
     on<AuthCheckRequested>(_onAuthCheckRequested);
     on<LoginRequested>(_onLoginRequested);
     on<LogoutRequested>(_onLogoutRequested);
     on<RegisterRequested>(_onRegisterRequested);
+    on<UpdateProfileRequested>(_onUpdateProfileRequested); // ← nouveau
+    on<UpdatePasswordRequested>(_onUpdatePasswordRequested); // ← nouveau
   }
 
   Future<void> _onAuthCheckRequested(
@@ -56,7 +64,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     emit(Unauthenticated());
   }
 
-  // Nouveau handler pour l'inscription
   Future<void> _onRegisterRequested(
     RegisterRequested event,
     Emitter<AuthState> emit,
@@ -69,8 +76,39 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     );
     result.fold(
       (failure) => emit(AuthError(failure.message)),
-      // Inscription réussie → directement connecté !
       (user) => emit(Authenticated(user)),
+    );
+  }
+
+  // Nouveau handler pour la mise à jour du profil
+  Future<void> _onUpdateProfileRequested(
+    UpdateProfileRequested event,
+    Emitter<AuthState> emit,
+  ) async {
+    emit(AuthLoading());
+    final result = await updateProfileUseCase(event.token, event.name);
+    result.fold(
+      (failure) => emit(AuthError(failure.message)),
+      // On émet Authenticated avec le nouvel utilisateur mis à jour
+      (user) => emit(Authenticated(user)),
+    );
+  }
+
+  // Nouveau handler pour la mise à jour du mot de passe
+  Future<void> _onUpdatePasswordRequested(
+    UpdatePasswordRequested event,
+    Emitter<AuthState> emit,
+  ) async {
+    emit(AuthLoading());
+    final result = await updatePasswordUseCase(
+      event.token,
+      event.currentPassword,
+      event.newPassword,
+    );
+    result.fold(
+      (failure) => emit(AuthError(failure.message)),
+      // Mot de passe changé → on reste connecté
+      (_) => emit(AuthSuccess('Mot de passe modifié avec succès')),
     );
   }
 }

@@ -38,3 +38,31 @@ class RegisterRequested extends AuthEvent {
 
 // Event déclenché quand l'utilisateur clique sur "Se déconnecter"
 class LogoutRequested extends AuthEvent {}
+
+class UpdateProfileRequested extends AuthEvent {
+  final String token;
+  final String name;
+
+  const UpdateProfileRequested({
+    required this.token,
+    required this.name,
+  });
+
+  @override
+  List<Object> get props => [token, name];
+}
+
+class UpdatePasswordRequested extends AuthEvent {
+  final String token;
+  final String currentPassword;
+  final String newPassword;
+
+  const UpdatePasswordRequested({
+    required this.token,
+    required this.currentPassword,
+    required this.newPassword,
+  });
+
+  @override
+  List<Object> get props => [token, currentPassword, newPassword];
+}

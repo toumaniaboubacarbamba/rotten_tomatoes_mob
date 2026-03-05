@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:rotten_tomatoes/features/auth/presentation/pages/edit_profile_page.dart';
 import '../../../movies/presentation/cubit/favorites_cubit.dart';
 import '../../../movies/presentation/cubit/favorites_state.dart';
 import '../../../movies/presentation/pages/favorites_page.dart';
@@ -118,6 +119,7 @@ class ProfilePage extends StatelessWidget {
                       );
                     },
                   ),
+
                   const SizedBox(height: 32),
 
                   // Infos du compte
@@ -138,6 +140,34 @@ class ProfilePage extends StatelessWidget {
                     label: 'Membre depuis',
                     value: _formatDate(user.createdAt),
                   ),
+                  const SizedBox(height: 16),
+                  SizedBox(
+                    width: double.infinity,
+                    height: 48,
+                    child: OutlinedButton.icon(
+                      style: OutlinedButton.styleFrom(
+                        backgroundColor: Colors.red[700],
+                        side: const BorderSide(color: Colors.red),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      icon: const Icon(Icons.edit, color: Colors.white),
+                      label: const Text(
+                        'Modifier le profil',
+                        style: TextStyle(color: Colors.white),
+                      ),
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => EditProfilePage(user: user),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+
                   const SizedBox(height: 40),
 
                   // Bouton déconnexion

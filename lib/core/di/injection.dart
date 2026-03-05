@@ -1,5 +1,7 @@
 import 'package:get_it/get_it.dart';
 import 'package:rotten_tomatoes/features/auth/domain/usecases/logout_usercase.dart';
+import 'package:rotten_tomatoes/features/auth/domain/usecases/update_password_usecase.dart';
+import 'package:rotten_tomatoes/features/auth/domain/usecases/update_profile_usecase.dart';
 import 'package:rotten_tomatoes/features/movies/data/datasources/favorite_remote_data_source.dart';
 import 'package:rotten_tomatoes/features/movies/data/datasources/movie_local_data_source.dart';
 import 'package:rotten_tomatoes/features/movies/domain/usecases/get_favorites.dart';
@@ -41,8 +43,12 @@ Future<void> initDependencies() async {
       logoutUseCase: sl(),
       getCachedUserUseCase: sl(),
       registerUseCase: sl(),
+      updateProfileUseCase: sl(),
+      updatePasswordUseCase: sl(),
     ),
   );
+  sl.registerLazySingleton(() => UpdateProfileUseCase(sl()));
+  sl.registerLazySingleton(() => UpdatePasswordUseCase(sl()));
   sl.registerLazySingleton(() => LoginUseCase(sl()));
   sl.registerLazySingleton(() => LogoutUseCase(sl()));
   sl.registerLazySingleton(() => GetCachedUserUseCase(sl()));

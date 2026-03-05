@@ -22,4 +22,10 @@ abstract class AuthRepository {
     String email,
     String password,
   );
+  Future<Either<Failure, User>> updateProfile(String token, String name);
+  Future<Either<Failure, Unit>> updatePassword(
+    String token,
+    String currentPassword,
+    String newPassword,
+  );
 }

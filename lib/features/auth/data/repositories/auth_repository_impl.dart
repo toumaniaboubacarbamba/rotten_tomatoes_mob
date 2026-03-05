@@ -1,13 +1,17 @@
 import 'package:dartz/dartz.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../../../core/error/failures.dart';
 import '../../domain/entities/user.dart';
 import '../../domain/repositories/auth_repository.dart';
 import '../datasources/auth_remote_data_source.dart';
+import '../models/user_model.dart';
+import 'dart:convert';
 
 class AuthRepositoryImpl implements AuthRepository {
   final AuthRemoteDataSource remoteDataSource;
+  final SharedPreferences sharedPreferences;
 
-  AuthRepositoryImpl(this.remoteDataSource);
+  AuthRepositoryImpl(this.remoteDataSource, this.sharedPreferences);
 
   @override
   Future<Either<Failure, User>> login(String email, String password) async {
@@ -22,7 +26,14 @@ class AuthRepositoryImpl implements AuthRepository {
   @override
   Future<Either<Failure, Unit>> logout() async {
     try {
-      await remoteDataSource.logout();
+      // On récupère le token depuis le cache avant de le supprimer
+      final userJson = sharedPreferences.getString('cached_user');
+      String token = '';
+      if (userJson != null) {
+        final user = UserModel.fromJson(jsonDecode(userJson));
+        token = user.token;
+      }
+      await remoteDataSource.logout(token);
       return const Right(unit);
     } catch (e) {
       return Left(ServerFailure(e.toString()));

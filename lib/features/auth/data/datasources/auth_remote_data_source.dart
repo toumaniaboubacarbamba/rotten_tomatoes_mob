@@ -83,8 +83,19 @@ class AuthRemoteDataSource {
     }
   }
 
-  Future<void> logout() async {
-    await sharedPreferences.remove('cached_user');
+  Future<void> logout(String token) async {
+    try {
+      await _dio.post(
+        '$_baseUrl/logout',
+        options: Options(headers: {
+          'Authorization': 'Bearer $token',
+        }),
+      );
+    } catch (e) {
+      // Même si l'API échoue on supprime le cache local
+    } finally {
+      await sharedPreferences.remove('cached_user');
+    }
   }
 
   Future<UserModel> getCachedUser() async {

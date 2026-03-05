@@ -4,7 +4,7 @@ import '../entities/user.dart';
 
 abstract class AuthRepository {
   // Tente de connecter l'utilisateur et retourne soit une erreur soit un User
-  Future<Either<Failure, User>> login(String username, String password);
+  Future<Either<Failure, User>> login(String email, String password);
 
   // Déconnecte l'utilisateur
   Future<Either<Failure, Unit>> logout();

@@ -4,6 +4,7 @@ import 'package:rotten_tomatoes/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:rotten_tomatoes/features/auth/presentation/bloc/auth_event.dart';
 import 'package:rotten_tomatoes/features/auth/presentation/bloc/auth_state.dart';
 import 'package:rotten_tomatoes/features/auth/presentation/pages/register_page.dart';
+import '../../../movies/presentation/pages/home_page.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -34,8 +35,16 @@ class _LoginPageState extends State<LoginPage> {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(state.message),
-                backgroundColor: Colors.amber,
+                backgroundColor: Colors.red,
               ),
+            );
+          }
+
+          
+          if (state is Authenticated) {
+            Navigator.of(context).pushAndRemoveUntil(
+              MaterialPageRoute(builder: (_) => const HomePage()),
+              (route) => false,
             );
           }
         },

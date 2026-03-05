@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:rotten_tomatoes/features/auth/presentation/pages/login_page.dart';
 import '../../domain/entities/user.dart';
 import '../bloc/auth_bloc.dart';
 import '../bloc/auth_event.dart';
@@ -63,15 +64,21 @@ class _EditProfilePageState extends State<EditProfilePage> {
             Navigator.pop(context);
           }
           if (state is AuthSuccess) {
-            // Mot de passe changé → on déconnecte proprement
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
                 content: Text('Mot de passe modifié ! Reconnecte-toi.'),
                 backgroundColor: Colors.green,
               ),
             );
-            // On supprime le cache et on redirige vers Login
-            context.read<AuthBloc>().add(LogoutRequested());
+            // Attendre que le snackbar s'affiche puis rediriger
+            Future.delayed(const Duration(seconds: 5), () {
+              if (!mounted) return;
+              context.read<AuthBloc>().add(LogoutRequested());
+              Navigator.of(context).pushAndRemoveUntil(
+                MaterialPageRoute(builder: (_) => const LoginPage()),
+                (route) => false,
+              );
+            });
           }
         },
         builder: (context, state) {
@@ -224,7 +231,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                     ),
                     onPressed: state is AuthLoading
                         ? null
-                        : () async {
+                        : () {
                             // Validation nom
                             final nameRegex = RegExp(
                               r'^[a-zA-ZàâäéèêëîïôöùûüÿçÀÂÄÉÈÊËÎÏÔÖÙÛÜŸÇ\s]+$',
@@ -262,9 +269,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                   6) {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(
-                                    content: Text(
-                                      'Le nouveau mot de passe doit contenir au moins 6 caractères !',
-                                    ),
+                                    content: Text('Minimum 6 caractères !'),
                                     backgroundColor: Colors.red,
                                   ),
                                 );
@@ -283,7 +288,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                 return;
                               }
 
-                              // On envoie la mise à jour du mot de passe
+                              // Mot de passe uniquement — pas de UpdateProfile après !
                               context.read<AuthBloc>().add(
                                 UpdatePasswordRequested(
                                   token: widget.user.token,
@@ -294,9 +299,10 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                       .trim(),
                                 ),
                               );
+                              return; // ← CRUCIAL ! on s'arrête ici
                             }
 
-                            // On envoie toujours la mise à jour du profil
+                            // Sinon uniquement le profil
                             context.read<AuthBloc>().add(
                               UpdateProfileRequested(
                                 token: widget.user.token,

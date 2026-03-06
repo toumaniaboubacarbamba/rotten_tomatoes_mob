@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'package:dio/dio.dart';
 import '../../domain/entities/movie.dart';
 import '../models/movie_model.dart';

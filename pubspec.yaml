@@ -17,6 +17,7 @@ dependencies:
   shared_preferences:
   go_router:
   cached_network_image:
+  flutter_local_notifications:
 
 dev_dependencies:
   flutter_test:

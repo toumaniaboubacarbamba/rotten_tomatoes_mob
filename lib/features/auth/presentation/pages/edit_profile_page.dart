@@ -73,11 +73,13 @@ class _EditProfilePageState extends State<EditProfilePage> {
             // Attendre que le snackbar s'affiche puis rediriger
             Future.delayed(const Duration(seconds: 5), () {
               if (!mounted) return;
-              context.read<AuthBloc>().add(LogoutRequested());
-              Navigator.of(context).pushAndRemoveUntil(
-                MaterialPageRoute(builder: (_) => const LoginPage()),
-                (route) => false,
-              );
+              if (context.mounted) {
+                context.read<AuthBloc>().add(LogoutRequested());
+                Navigator.of(context).pushAndRemoveUntil(
+                  MaterialPageRoute(builder: (_) => const LoginPage()),
+                  (route) => false,
+                );
+              }
             });
           }
         },

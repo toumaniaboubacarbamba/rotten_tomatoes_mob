@@ -16,7 +16,7 @@ class NotificationService {
 
     const initSettings = InitializationSettings(android: androidSettings);
 
-    await _notifications.initialize(initSettings);
+    await _notifications.initialize(settings: initSettings);
   }
 
   // Notification simple
@@ -36,7 +36,12 @@ class NotificationService {
 
     const details = NotificationDetails(android: androidDetails);
 
-    await _notifications.show(required id, title, body, details);
+    await _notifications.show(
+      id: id,
+      title: title,
+      body: body,
+      notificationDetails: details,
+    );
   }
 
   // Notification ajout favori

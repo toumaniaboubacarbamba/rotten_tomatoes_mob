@@ -2,6 +2,7 @@ import 'package:get_it/get_it.dart';
 import 'package:rotten_tomatoes/features/auth/domain/usecases/logout_usercase.dart';
 import 'package:rotten_tomatoes/features/auth/domain/usecases/update_password_usecase.dart';
 import 'package:rotten_tomatoes/features/auth/domain/usecases/update_profile_usecase.dart';
+import 'package:rotten_tomatoes/features/movies/data/datasources/favorite_remote_data_source.dart';
 import 'package:rotten_tomatoes/features/movies/domain/usecases/get_favorites.dart';
 import 'package:rotten_tomatoes/features/movies/domain/usecases/get_genres.dart';
 import 'package:rotten_tomatoes/features/movies/domain/usecases/get_movies_by_genre.dart';

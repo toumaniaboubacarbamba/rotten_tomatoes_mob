@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rotten_tomatoes/core/di/injection.dart';
+import 'package:rotten_tomatoes/core/services/notification_service.dart';
 import 'package:rotten_tomatoes/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:rotten_tomatoes/features/auth/presentation/bloc/auth_event.dart';
 import 'package:rotten_tomatoes/features/auth/presentation/bloc/auth_state.dart';
@@ -14,6 +15,13 @@ import 'package:rotten_tomatoes/features/movies/presentation/pages/home_page.dar
 void main() async {
   WidgetsFlutterBinding.ensureInitialized(); // Nécessaire pour les opérations asynchrones avant runApp
   await initDependencies(); // on initialise les dépendances avant de lancer l'app
+  await NotificationService()
+      .init(); // on initialise le service de notifications
+  await NotificationService().showNotification(
+    id: 99,
+    title: 'Test',
+    body: 'Les notifications fonctionnent !',
+  );
   runApp(const MainApp());
 }
 

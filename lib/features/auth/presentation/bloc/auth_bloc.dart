@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:rotten_tomatoes/core/services/notification_service.dart';
 import 'package:rotten_tomatoes/features/auth/domain/usecases/logout_usercase.dart';
 import '../../domain/usecases/get_cached_user_usecase.dart';
 import '../../domain/usecases/login_usecase.dart';
@@ -50,10 +51,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   ) async {
     emit(AuthLoading());
     final result = await loginUseCase(event.email, event.password);
-    result.fold(
-      (failure) => emit(AuthError(failure.message)),
-      (user) => emit(Authenticated(user)),
-    );
+    result.fold((failure) => emit(AuthError(failure.message)), (user) {
+      NotificationService().showWelcomeNotification(user.name);
+      emit(Authenticated(user));
+    });
   }
 
   Future<void> _onLogoutRequested(

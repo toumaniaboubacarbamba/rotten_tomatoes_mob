@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:rotten_tomatoes/core/services/notification_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import '../../domain/entities/movie.dart';
@@ -39,7 +40,14 @@ class FavoritesCubit extends Cubit<FavoritesState> {
 
   Future<void> toggle(Movie movie) async {
     final token = _getToken();
-    await toggleFavoriteUseCase(movie, token);
+    final result = await toggleFavoriteUseCase(movie, token);
+    result.fold((failure) => null, (isFavorite) {
+      if (isFavorite) {
+        NotificationService().showFavoriteNotification(movie.title);
+      } else {
+        NotificationService().showUnfavoriteNotification(movie.title);
+      }
+    });
     await loadFavorites();
   }
 }

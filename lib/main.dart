@@ -17,11 +17,7 @@ void main() async {
   await initDependencies(); // on initialise les dépendances avant de lancer l'app
   await NotificationService()
       .init(); // on initialise le service de notifications
-  await NotificationService().showNotification(
-    id: 99,
-    title: 'Test',
-    body: 'Les notifications fonctionnent !',
-  );
+
   runApp(const MainApp());
 }
 

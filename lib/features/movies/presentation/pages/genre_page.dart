@@ -9,10 +9,11 @@ class GenrePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     return Scaffold(
-      backgroundColor: Colors.black,
       appBar: AppBar(
-        backgroundColor: Colors.black,
         title: const Row(
           children: [
             Icon(Icons.category, color: Colors.red),
@@ -26,7 +27,6 @@ class GenrePage extends StatelessWidget {
           if (state is GenreLoading) {
             return const Center(child: CircularProgressIndicator());
           }
-
           if (state is GenreError) {
             return Center(
               child: Text(
@@ -35,7 +35,6 @@ class GenrePage extends StatelessWidget {
               ),
             );
           }
-
           if (state is GenreLoaded) {
             return Column(
               children: [
@@ -51,9 +50,8 @@ class GenrePage extends StatelessWidget {
                       final isSelected = state.selectedGenre?.id == genre.id;
 
                       return GestureDetector(
-                        onTap: () {
-                          context.read<GenreCubit>().selectGenre(genre);
-                        },
+                        onTap: () =>
+                            context.read<GenreCubit>().selectGenre(genre),
                         child: Container(
                           margin: const EdgeInsets.only(right: 8),
                           padding: const EdgeInsets.symmetric(
@@ -61,12 +59,18 @@ class GenrePage extends StatelessWidget {
                             vertical: 8,
                           ),
                           decoration: BoxDecoration(
-                            color: isSelected ? Colors.red : Colors.grey[900],
+                            color: isSelected
+                                ? Colors.red
+                                : isDark
+                                ? Colors.grey[900]
+                                : Colors.grey[200],
                             borderRadius: BorderRadius.circular(99),
                             border: Border.all(
                               color: isSelected
-                                  ? Colors.white
-                                  : Colors.grey[800]!,
+                                  ? Colors.red
+                                  : isDark
+                                  ? Colors.grey[800]!
+                                  : Colors.grey[300]!,
                             ),
                           ),
                           child: Text(
@@ -74,7 +78,9 @@ class GenrePage extends StatelessWidget {
                             style: TextStyle(
                               color: isSelected
                                   ? Colors.white
-                                  : Colors.grey[400],
+                                  : theme.colorScheme.onSurface.withValues(
+                                      alpha: 0.7,
+                                    ),
                               fontWeight: isSelected
                                   ? FontWeight.bold
                                   : FontWeight.normal,
@@ -94,16 +100,20 @@ class GenrePage extends StatelessWidget {
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              const Icon(
+                              Icon(
                                 Icons.movie_filter,
-                                color: Colors.grey,
+                                color: theme.colorScheme.onSurface.withValues(
+                                  alpha: 0.3,
+                                ),
                                 size: 64,
                               ),
                               const SizedBox(height: 16),
                               Text(
                                 'Sélectionne un genre',
                                 style: TextStyle(
-                                  color: Colors.grey[400],
+                                  color: theme.colorScheme.onSurface.withValues(
+                                    alpha: 0.5,
+                                  ),
                                   fontSize: 16,
                                 ),
                               ),
@@ -122,15 +132,13 @@ class GenrePage extends StatelessWidget {
                                 mainAxisSpacing: 12,
                               ),
                           itemCount: state.movies.length,
-                          itemBuilder: (context, index) {
-                            return MovieCard(movie: state.movies[index]);
-                          },
+                          itemBuilder: (context, index) =>
+                              MovieCard(movie: state.movies[index]),
                         ),
                 ),
               ],
             );
           }
-
           return const SizedBox.shrink();
         },
       ),

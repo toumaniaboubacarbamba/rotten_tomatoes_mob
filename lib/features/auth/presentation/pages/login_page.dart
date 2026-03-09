@@ -26,11 +26,11 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Scaffold(
-      backgroundColor: Colors.black,
       body: BlocListener<AuthBloc, AuthState>(
         listener: (context, state) {
-          // Affiche une Snackbar en cas d'erreur de connexion
           if (state is AuthError) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
@@ -39,8 +39,6 @@ class _LoginPageState extends State<LoginPage> {
               ),
             );
           }
-
-          
           if (state is Authenticated) {
             Navigator.of(context).pushAndRemoveUntil(
               MaterialPageRoute(builder: (_) => const HomePage()),
@@ -51,7 +49,6 @@ class _LoginPageState extends State<LoginPage> {
         child: SafeArea(
           child: SingleChildScrollView(
             child: SizedBox(
-              // On force la hauteur minimale à l'écran complet
               height: MediaQuery.of(context).size.height,
               child: Padding(
                 padding: const EdgeInsets.all(24),
@@ -68,72 +65,59 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                     ),
                     const SizedBox(height: 8),
-                    const Text(
+                    Text(
                       "Connectez-vous pour découvrir les meilleurs films !",
-                      style: TextStyle(color: Colors.white70, fontSize: 14),
+                      style: TextStyle(
+                        color: theme.colorScheme.onSurface.withValues(
+                          alpha: 0.6,
+                        ),
+                        fontSize: 14,
+                      ),
                     ),
                     const SizedBox(height: 48),
 
-                    //champ email
+                    // Champ email
                     TextField(
                       controller: _emailController,
                       keyboardType: TextInputType.emailAddress,
-                      style: const TextStyle(color: Colors.white),
                       decoration: InputDecoration(
                         labelText: 'Email',
-                        labelStyle: TextStyle(color: Colors.grey[400]),
-                        prefixIcon: const Icon(Icons.email, color: Colors.grey),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide(color: Colors.grey[800]!),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: const BorderSide(color: Colors.red),
+                        prefixIcon: Icon(
+                          Icons.email,
+                          color: theme.colorScheme.onSurface.withValues(
+                            alpha: 0.5,
+                          ),
                         ),
                       ),
                     ),
                     const SizedBox(height: 16),
 
-                    //champ mdp
+                    // Champ mot de passe
                     TextField(
                       controller: _passwordController,
                       obscureText: true,
-                      style: const TextStyle(color: Colors.white),
                       decoration: InputDecoration(
-                        labelText: "Mot de passe",
-                        labelStyle: TextStyle(color: Colors.grey[400]),
-                        prefixIcon: const Icon(Icons.lock, color: Colors.grey),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide(color: Colors.grey[800]!),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: const BorderSide(color: Colors.red),
+                        labelText: 'Mot de passe',
+                        prefixIcon: Icon(
+                          Icons.lock,
+                          color: theme.colorScheme.onSurface.withValues(
+                            alpha: 0.5,
+                          ),
                         ),
                       ),
                     ),
                     const SizedBox(height: 32),
 
-                    // Bouton de connexion
+                    // Bouton connexion
                     BlocBuilder<AuthBloc, AuthState>(
                       builder: (context, state) {
                         return SizedBox(
                           width: double.infinity,
                           height: 52,
                           child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.red,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                            ),
-                            // Si chargement en cours → on désactive le bouton
                             onPressed: state is AuthLoading
                                 ? null
                                 : () {
-                                    // Validation email vide
                                     if (_emailController.text.trim().isEmpty) {
                                       ScaffoldMessenger.of(
                                         context,
@@ -141,17 +125,12 @@ class _LoginPageState extends State<LoginPage> {
                                         const SnackBar(
                                           content: Text(
                                             'L\'email est obligatoire !',
-                                            style: TextStyle(
-                                              color: Colors.white,
-                                            ),
                                           ),
                                           backgroundColor: Colors.red,
                                         ),
                                       );
                                       return;
                                     }
-
-                                    // Validation format email
                                     final emailRegex = RegExp(
                                       r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$',
                                     );
@@ -164,17 +143,12 @@ class _LoginPageState extends State<LoginPage> {
                                         const SnackBar(
                                           content: Text(
                                             'Adresse email invalide !',
-                                            style: TextStyle(
-                                              color: Colors.white,
-                                            ),
                                           ),
                                           backgroundColor: Colors.red,
                                         ),
                                       );
                                       return;
                                     }
-
-                                    // Validation password vide
                                     if (_passwordController.text
                                         .trim()
                                         .isEmpty) {
@@ -184,16 +158,12 @@ class _LoginPageState extends State<LoginPage> {
                                         const SnackBar(
                                           content: Text(
                                             'Le mot de passe est obligatoire !',
-                                            style: TextStyle(
-                                              color: Colors.white,
-                                            ),
                                           ),
                                           backgroundColor: Colors.red,
                                         ),
                                       );
                                       return;
                                     }
-
                                     context.read<AuthBloc>().add(
                                       LoginRequested(
                                         email: _emailController.text.trim(),
@@ -220,17 +190,19 @@ class _LoginPageState extends State<LoginPage> {
                     const SizedBox(height: 16),
                     Center(
                       child: TextButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => const RegisterPage(),
-                            ),
-                          );
-                        },
-                        child: const Text(
+                        onPressed: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const RegisterPage(),
+                          ),
+                        ),
+                        child: Text(
                           "Pas de compte ? S'inscrire",
-                          style: TextStyle(color: Colors.grey),
+                          style: TextStyle(
+                            color: theme.colorScheme.onSurface.withValues(
+                              alpha: 0.6,
+                            ),
+                          ),
                         ),
                       ),
                     ),

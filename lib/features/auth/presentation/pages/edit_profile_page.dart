@@ -39,11 +39,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.black,
-      appBar: AppBar(
-        backgroundColor: Colors.black,
-        title: const Text('Modifier le profil'),
-      ),
+      appBar: AppBar(title: const Text('Modifier le profil')),
       body: BlocConsumer<AuthBloc, AuthState>(
         listener: (context, state) {
           if (state is AuthError) {
@@ -90,10 +86,10 @@ class _EditProfilePageState extends State<EditProfilePage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // Section modifier le nom
-                const Text(
+                Text(
                   'Informations personnelles',
                   style: TextStyle(
-                    color: Colors.white,
+                    color: Theme.of(context).colorScheme.onSurface,
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                   ),
@@ -102,7 +98,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
                 TextField(
                   controller: _nameController,
-                  style: const TextStyle(color: Colors.white),
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onSurface,
+                  ),
                   decoration: InputDecoration(
                     labelText: 'Nom complet',
                     labelStyle: TextStyle(color: Colors.grey[400]),
@@ -140,10 +138,10 @@ class _EditProfilePageState extends State<EditProfilePage> {
                 const SizedBox(height: 24),
 
                 // ← AJOUTE ICI la section mot de passe
-                const Text(
+                Text(
                   'Modifier le mot de passe',
                   style: TextStyle(
-                    color: Colors.white,
+                    color: Theme.of(context).colorScheme.onSurface,
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                   ),
@@ -157,7 +155,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
                 TextField(
                   controller: _currentPasswordController,
                   obscureText: true,
-                  style: const TextStyle(color: Colors.white),
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onSurface,
+                  ),
                   decoration: InputDecoration(
                     labelText: 'Mot de passe actuel',
                     labelStyle: TextStyle(color: Colors.grey[400]),
@@ -177,7 +177,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
                 TextField(
                   controller: _newPasswordController,
                   obscureText: true,
-                  style: const TextStyle(color: Colors.white),
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onSurface,
+                  ),
                   decoration: InputDecoration(
                     labelText: 'Nouveau mot de passe',
                     labelStyle: TextStyle(color: Colors.grey[400]),
@@ -200,7 +202,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
                 TextField(
                   controller: _confirmPasswordController,
                   obscureText: true,
-                  style: const TextStyle(color: Colors.white),
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onSurface,
+                  ),
                   decoration: InputDecoration(
                     labelText: 'Confirmer le nouveau mot de passe',
                     labelStyle: TextStyle(color: Colors.grey[400]),

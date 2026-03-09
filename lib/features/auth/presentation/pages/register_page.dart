@@ -29,19 +29,17 @@ class _RegisterPageState extends State<RegisterPage> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Scaffold(
-      backgroundColor: Colors.black,
-      appBar: AppBar(
-        backgroundColor: Colors.black,
-        title: const Text('Creer un compte'),
-      ),
+      appBar: AppBar(title: const Text('Créer un compte')),
       body: BlocListener<AuthBloc, AuthState>(
         listener: (context, state) {
           if (state is AuthError) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(state.message),
-                backgroundColor: Colors.orangeAccent,
+                backgroundColor: Colors.red,
               ),
             );
           }
@@ -55,7 +53,6 @@ class _RegisterPageState extends State<RegisterPage> {
         child: SafeArea(
           child: SingleChildScrollView(
             child: SizedBox(
-              // On force la hauteur minimale à l'écran complet
               height: MediaQuery.of(context).size.height,
               child: Padding(
                 padding: const EdgeInsets.all(24),
@@ -74,46 +71,38 @@ class _RegisterPageState extends State<RegisterPage> {
                     const SizedBox(height: 8),
                     Text(
                       'Crée ton compte gratuitement',
-                      style: TextStyle(color: Colors.grey[400], fontSize: 14),
+                      style: TextStyle(
+                        color: theme.colorScheme.onSurface.withValues(
+                          alpha: 0.6,
+                        ),
+                        fontSize: 14,
+                      ),
                     ),
                     const SizedBox(height: 40),
+
                     TextField(
                       controller: _nameController,
-                      style: const TextStyle(color: Colors.white),
                       decoration: InputDecoration(
                         labelText: 'Nom complet',
-                        labelStyle: TextStyle(color: Colors.grey[400]),
-                        prefixIcon: const Icon(
+                        prefixIcon: Icon(
                           Icons.person,
-                          color: Colors.grey,
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide(color: Colors.grey[800]!),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: const BorderSide(color: Colors.red),
+                          color: theme.colorScheme.onSurface.withValues(
+                            alpha: 0.5,
+                          ),
                         ),
                       ),
                     ),
                     const SizedBox(height: 16),
-
                     TextField(
                       controller: _emailController,
                       keyboardType: TextInputType.emailAddress,
-                      style: const TextStyle(color: Colors.white),
                       decoration: InputDecoration(
                         labelText: 'Email',
-                        labelStyle: TextStyle(color: Colors.grey[400]),
-                        prefixIcon: const Icon(Icons.email, color: Colors.grey),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide(color: Colors.grey[800]!),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: const BorderSide(color: Colors.red),
+                        prefixIcon: Icon(
+                          Icons.email,
+                          color: theme.colorScheme.onSurface.withValues(
+                            alpha: 0.5,
+                          ),
                         ),
                       ),
                     ),
@@ -121,18 +110,13 @@ class _RegisterPageState extends State<RegisterPage> {
                     TextField(
                       controller: _passwordController,
                       obscureText: true,
-                      style: const TextStyle(color: Colors.white),
                       decoration: InputDecoration(
                         labelText: 'Mot de passe',
-                        labelStyle: TextStyle(color: Colors.grey[400]),
-                        prefixIcon: const Icon(Icons.lock, color: Colors.grey),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide(color: Colors.grey[800]!),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: const BorderSide(color: Colors.red),
+                        prefixIcon: Icon(
+                          Icons.lock,
+                          color: theme.colorScheme.onSurface.withValues(
+                            alpha: 0.5,
+                          ),
                         ),
                       ),
                     ),
@@ -140,21 +124,13 @@ class _RegisterPageState extends State<RegisterPage> {
                     TextField(
                       controller: _passwordConfirmController,
                       obscureText: true,
-                      style: const TextStyle(color: Colors.white),
                       decoration: InputDecoration(
                         labelText: 'Confirmer le mot de passe',
-                        labelStyle: TextStyle(color: Colors.grey[400]),
-                        prefixIcon: const Icon(
+                        prefixIcon: Icon(
                           Icons.lock_outline,
-                          color: Colors.grey,
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: BorderSide(color: Colors.grey[800]!),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          borderSide: const BorderSide(color: Colors.red),
+                          color: theme.colorScheme.onSurface.withValues(
+                            alpha: 0.5,
+                          ),
                         ),
                       ),
                     ),
@@ -166,16 +142,9 @@ class _RegisterPageState extends State<RegisterPage> {
                           width: double.infinity,
                           height: 52,
                           child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.red,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                            ),
                             onPressed: state is AuthLoading
                                 ? null
                                 : () {
-                                    // Validation nom — lettres et espaces uniquement
                                     final nameRegex = RegExp(
                                       r'^[a-zA-ZàâäéèêëîïôöùûüÿçÀÂÄÉÈÊËÎÏÔÖÙÛÜŸÇ\s]+$',
                                     );
@@ -186,9 +155,6 @@ class _RegisterPageState extends State<RegisterPage> {
                                         const SnackBar(
                                           content: Text(
                                             'Le nom est obligatoire !',
-                                            style: TextStyle(
-                                              color: Colors.white,
-                                            ),
                                           ),
                                           backgroundColor: Colors.red,
                                         ),
@@ -204,17 +170,12 @@ class _RegisterPageState extends State<RegisterPage> {
                                         const SnackBar(
                                           content: Text(
                                             'Le nom ne doit contenir que des lettres !',
-                                            style: TextStyle(
-                                              color: Colors.white,
-                                            ),
                                           ),
                                           backgroundColor: Colors.red,
                                         ),
                                       );
                                       return;
                                     }
-
-                                    // Validation email
                                     final emailRegex = RegExp(
                                       r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$',
                                     );
@@ -227,17 +188,12 @@ class _RegisterPageState extends State<RegisterPage> {
                                         const SnackBar(
                                           content: Text(
                                             'Adresse email invalide !',
-                                            style: TextStyle(
-                                              color: Colors.white,
-                                            ),
                                           ),
                                           backgroundColor: Colors.red,
                                         ),
                                       );
                                       return;
                                     }
-
-                                    // Validation mot de passe
                                     if (_passwordController.text.trim().length <
                                         6) {
                                       ScaffoldMessenger.of(
@@ -245,18 +201,13 @@ class _RegisterPageState extends State<RegisterPage> {
                                       ).showSnackBar(
                                         const SnackBar(
                                           content: Text(
-                                            'Le mot de passe doit contenir au moins 6 caractères !',
-                                            style: TextStyle(
-                                              color: Colors.white,
-                                            ),
+                                            'Minimum 6 caractères !',
                                           ),
                                           backgroundColor: Colors.red,
                                         ),
                                       );
                                       return;
                                     }
-
-                                    // Validation confirmation mot de passe
                                     if (_passwordController.text !=
                                         _passwordConfirmController.text) {
                                       ScaffoldMessenger.of(
@@ -265,16 +216,12 @@ class _RegisterPageState extends State<RegisterPage> {
                                         const SnackBar(
                                           content: Text(
                                             'Les mots de passe ne correspondent pas !',
-                                            style: TextStyle(
-                                              color: Colors.white,
-                                            ),
                                           ),
                                           backgroundColor: Colors.red,
                                         ),
                                       );
                                       return;
                                     }
-
                                     context.read<AuthBloc>().add(
                                       RegisterRequested(
                                         name: _nameController.text.trim(),

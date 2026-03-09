@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rotten_tomatoes/core/di/injection.dart';
 import 'package:rotten_tomatoes/core/services/notification_service.dart';
+import 'package:rotten_tomatoes/core/theme/app_theme.dart';
+import 'package:rotten_tomatoes/core/theme/theme_cubit.dart';
 import 'package:rotten_tomatoes/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:rotten_tomatoes/features/auth/presentation/bloc/auth_event.dart';
 import 'package:rotten_tomatoes/features/auth/presentation/bloc/auth_state.dart';
@@ -35,12 +37,19 @@ class MainApp extends StatelessWidget {
         BlocProvider(create: (_) => sl<SearchCubit>()),
         BlocProvider(create: (_) => sl<FavoritesCubit>()..loadFavorites()),
         BlocProvider(create: (_) => sl<GenreCubit>()..loadGenres()),
+        BlocProvider(create: (_) => ThemeCubit()..loadTheme()),
       ],
-      child: MaterialApp(
-        debugShowCheckedModeBanner: false,
-        title: 'Rotten Tomatoes',
-        theme: ThemeData.dark(),
-          home: const SplashPage(),
+      child: BlocBuilder<ThemeCubit, bool>(
+        builder: (context, isDark) {
+          return MaterialApp(
+            debugShowCheckedModeBanner: false,
+            title: 'Rotten Tomatoes',
+            theme: AppTheme.light,
+            darkTheme: AppTheme.dark,
+            themeMode: isDark ? ThemeMode.dark : ThemeMode.light,
+            home: const SplashPage(),
+          );
+        },
       ),
     );
   }

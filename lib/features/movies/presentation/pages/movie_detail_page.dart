@@ -3,19 +3,20 @@ import 'package:rotten_tomatoes/features/movies/domain/entities/movie.dart';
 
 class MovieDetailPage extends StatelessWidget {
   final Movie movie;
-
   const MovieDetailPage({super.key, required this.movie});
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     return Scaffold(
-      backgroundColor: Colors.black,
       body: CustomScrollView(
         slivers: [
           SliverAppBar(
             expandedHeight: 400,
             pinned: true,
-            backgroundColor: Colors.black,
+            backgroundColor: theme.scaffoldBackgroundColor,
             flexibleSpace: FlexibleSpaceBar(
               background: Stack(
                 fit: StackFit.expand,
@@ -26,7 +27,10 @@ class MovieDetailPage extends StatelessWidget {
                       gradient: LinearGradient(
                         begin: Alignment.bottomCenter,
                         end: Alignment.topCenter,
-                        colors: [Colors.transparent, Colors.black],
+                        colors: [
+                          theme.scaffoldBackgroundColor,
+                          Colors.transparent,
+                        ],
                       ),
                     ),
                   ),
@@ -36,19 +40,22 @@ class MovieDetailPage extends StatelessWidget {
           ),
           SliverToBoxAdapter(
             child: Padding(
-              padding: const EdgeInsets.all(20.0),
+              padding: const EdgeInsets.all(20),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  // Titre
                   Text(
                     movie.title,
-                    style: const TextStyle(
-                      color: Colors.white,
+                    style: TextStyle(
+                      color: theme.colorScheme.onSurface,
                       fontSize: 26,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   const SizedBox(height: 12),
+
+                  // Note
                   Row(
                     children: [
                       const Icon(Icons.star, color: Colors.amber, size: 20),
@@ -64,23 +71,24 @@ class MovieDetailPage extends StatelessWidget {
                     ],
                   ),
                   const SizedBox(height: 24),
-                  const Text(
+
+                  // Synopsis
+                  Text(
                     'Synopsis',
                     style: TextStyle(
-                      color: Colors.white,
+                      color: theme.colorScheme.onSurface,
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-
                   const SizedBox(height: 8),
                   Text(
                     movie.overview.isEmpty
-                        ? 'No synopsis available.'
+                        ? 'Aucun synopsis disponible.'
                         : movie.overview,
                     textAlign: TextAlign.justify,
                     style: TextStyle(
-                      color: Colors.grey[400],
+                      color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
                       fontSize: 15,
                       height: 1.6,
                     ),

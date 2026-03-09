@@ -9,10 +9,10 @@ class FavoritesPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Scaffold(
-      backgroundColor: Colors.black,
       appBar: AppBar(
-        backgroundColor: Colors.black,
         title: const Row(
           children: [
             Icon(Icons.favorite, color: Colors.red),
@@ -26,7 +26,6 @@ class FavoritesPage extends StatelessWidget {
           if (state is FavoritesLoading) {
             return const Center(child: CircularProgressIndicator());
           }
-
           if (state is FavoritesError) {
             return Center(
               child: Text(
@@ -35,29 +34,41 @@ class FavoritesPage extends StatelessWidget {
               ),
             );
           }
-
           if (state is FavoritesLoaded) {
             if (state.movies.isEmpty) {
-              return const Center(
+              return Center(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.favorite_border, color: Colors.grey, size: 64),
-                    SizedBox(height: 16),
+                    Icon(
+                      Icons.favorite_border,
+                      color: theme.colorScheme.onSurface.withValues(alpha: 0.3),
+                      size: 64,
+                    ),
+                    const SizedBox(height: 16),
                     Text(
                       'Aucun favori pour le moment',
-                      style: TextStyle(color: Colors.grey, fontSize: 16),
+                      style: TextStyle(
+                        color: theme.colorScheme.onSurface.withValues(
+                          alpha: 0.5,
+                        ),
+                        fontSize: 16,
+                      ),
                     ),
-                    SizedBox(height: 8),
+                    const SizedBox(height: 8),
                     Text(
                       'Appuie sur ❤️ sur un film pour l\'ajouter',
-                      style: TextStyle(color: Colors.grey, fontSize: 13),
+                      style: TextStyle(
+                        color: theme.colorScheme.onSurface.withValues(
+                          alpha: 0.4,
+                        ),
+                        fontSize: 13,
+                      ),
                     ),
                   ],
                 ),
               );
             }
-
             return GridView.builder(
               padding: const EdgeInsets.all(12),
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -67,12 +78,10 @@ class FavoritesPage extends StatelessWidget {
                 mainAxisSpacing: 12,
               ),
               itemCount: state.movies.length,
-              itemBuilder: (context, index) {
-                return MovieCard(movie: state.movies[index]);
-              },
+              itemBuilder: (context, index) =>
+                  MovieCard(movie: state.movies[index]),
             );
           }
-
           return const SizedBox.shrink();
         },
       ),

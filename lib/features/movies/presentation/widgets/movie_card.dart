@@ -7,18 +7,18 @@ import '../pages/movie_detail_page.dart';
 
 class MovieCard extends StatelessWidget {
   final Movie movie;
-
   const MovieCard({super.key, required this.movie});
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     return GestureDetector(
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (_) => MovieDetailPage(movie: movie)),
-        );
-      },
+      onTap: () => Navigator.push(
+        context,
+        MaterialPageRoute(builder: (_) => MovieDetailPage(movie: movie)),
+      ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(12),
         child: Stack(
@@ -29,15 +29,22 @@ class MovieCard extends StatelessWidget {
               fit: BoxFit.cover,
               loadingBuilder: (context, child, loadingProgress) {
                 if (loadingProgress == null) return child;
-                return Container(color: Colors.grey[900]);
+                return Container(
+                  color: isDark ? Colors.grey[900] : Colors.grey[300],
+                );
               },
               errorBuilder: (context, error, stackTrace) {
                 return Container(
-                  color: Colors.grey[900],
-                  child: const Icon(Icons.broken_image, color: Colors.white),
+                  color: isDark ? Colors.grey[900] : Colors.grey[300],
+                  child: Icon(
+                    Icons.broken_image,
+                    color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
+                  ),
                 );
               },
             ),
+
+            // Gradient toujours noir car sur image
             Positioned(
               bottom: 0,
               left: 0,
@@ -88,19 +95,14 @@ class MovieCard extends StatelessWidget {
                             ),
                           ],
                         ),
-
-                        // Bouton favori
                         BlocBuilder<FavoritesCubit, FavoritesState>(
                           builder: (context, state) {
-                            // On vérifie si ce film est dans les favoris
                             final isFavorite =
                                 state is FavoritesLoaded &&
                                 state.movies.any((m) => m.id == movie.id);
-
                             return GestureDetector(
-                              onTap: () {
-                                context.read<FavoritesCubit>().toggle(movie);
-                              },
+                              onTap: () =>
+                                  context.read<FavoritesCubit>().toggle(movie),
                               child: Icon(
                                 isFavorite
                                     ? Icons.favorite

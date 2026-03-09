@@ -46,9 +46,11 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
     return BlocListener<AuthBloc, AuthState>(
       listener: (context, state) {
-        // Dès que déconnecté → on vide la pile et on va sur LoginPage
         if (state is Unauthenticated) {
           Navigator.of(context).pushAndRemoveUntil(
             MaterialPageRoute(builder: (_) => const LoginPage()),
@@ -57,44 +59,36 @@ class _HomePageState extends State<HomePage> {
         }
       },
       child: Scaffold(
-        backgroundColor: Colors.black,
         appBar: AppBar(
           backgroundColor: Colors.red[700],
           title: const Text(
             'Rotten Tomatoes',
-            style: TextStyle(fontWeight: FontWeight.bold),
+            style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
           ),
           actions: [
             IconButton(
               icon: const Icon(Icons.category, color: Colors.white),
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => const GenrePage()),
-                );
-              },
+              onPressed: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const GenrePage()),
+              ),
             ),
-            // Afficher l'icône favoris avec un badge indiquant le nombre de films favoris
             BlocBuilder<FavoritesCubit, FavoritesState>(
               builder: (context, favState) {
-                int count = 0;
-                if (favState is FavoritesLoaded) {
-                  count = favState.movies.length;
-                }
-
+                int count = favState is FavoritesLoaded
+                    ? favState.movies.length
+                    : 0;
                 return Stack(
                   alignment: Alignment.center,
                   children: [
                     IconButton(
                       icon: const Icon(Icons.favorite, color: Colors.white),
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => const FavoritesPage(),
-                          ),
-                        );
-                      },
+                      onPressed: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const FavoritesPage(),
+                        ),
+                      ),
                     ),
                     if (count > 0)
                       Positioned(
@@ -103,7 +97,7 @@ class _HomePageState extends State<HomePage> {
                         child: Container(
                           padding: const EdgeInsets.all(2),
                           decoration: BoxDecoration(
-                            color: Colors.red,
+                            color: Colors.white,
                             borderRadius: BorderRadius.circular(10),
                           ),
                           constraints: const BoxConstraints(
@@ -113,7 +107,7 @@ class _HomePageState extends State<HomePage> {
                           child: Text(
                             '$count',
                             style: const TextStyle(
-                              color: Colors.white,
+                              color: Colors.red,
                               fontSize: 10,
                               fontWeight: FontWeight.bold,
                             ),
@@ -125,76 +119,71 @@ class _HomePageState extends State<HomePage> {
                 );
               },
             ),
-            // Bouton profil
             IconButton(
               icon: const Icon(Icons.person, color: Colors.white),
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => const ProfilePage()),
-                );
-              },
+              onPressed: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const ProfilePage()),
+              ),
             ),
             IconButton(
-              onPressed: () {
-                context.read<AuthBloc>().add(LogoutRequested());
-              },
-              icon: Icon(Icons.logout, color: Colors.white),
+              icon: const Icon(Icons.logout, color: Colors.white),
+              onPressed: () => context.read<AuthBloc>().add(LogoutRequested()),
             ),
           ],
         ),
-
-        //BlocBuilder pour écouter les changements d'état du MoviesCubit et afficher les films en conséquence
         body: Column(
           children: [
+            // Barre de recherche
             Padding(
               padding: const EdgeInsets.all(12),
               child: TextField(
-                style: const TextStyle(color: Colors.white),
                 decoration: InputDecoration(
                   hintText: 'Rechercher un film...',
-                  hintStyle: TextStyle(color: Colors.grey[500]),
-                  prefixIcon: const Icon(Icons.search, color: Colors.grey),
+                  prefixIcon: Icon(
+                    Icons.search,
+                    color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
+                  ),
                   suffixIcon: IconButton(
-                    onPressed: () {
-                      context.read<SearchCubit>().clearSearch();
-                    },
-                    icon: const Icon(Icons.clear, color: Colors.grey),
+                    onPressed: () => context.read<SearchCubit>().clearSearch(),
+                    icon: Icon(
+                      Icons.clear,
+                      color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
+                    ),
                   ),
                   filled: true,
-                  fillColor: Colors.grey[900],
+                  fillColor: isDark ? Colors.grey[900] : Colors.grey[200],
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12),
                     borderSide: BorderSide.none,
                   ),
                 ),
-                onChanged: (query) {
-                  context.read<SearchCubit>().search(query);
-                },
+                onChanged: (query) => context.read<SearchCubit>().search(query),
               ),
             ),
-            // Contenu — recherche ou liste populaire
+
+            // Contenu
             Expanded(
               child: BlocBuilder<SearchCubit, SearchState>(
                 builder: (context, searchState) {
-                  // Si recherche active → afficher résultats recherche
                   if (searchState is SearchLoading) {
                     return const Center(child: CircularProgressIndicator());
                   }
-
                   if (searchState is SearchLoaded) {
                     return _buildGrid(context, searchState.movies);
                   }
-
                   if (searchState is SearchEmpty) {
-                    return const Center(
+                    return Center(
                       child: Text(
                         '🎬 Aucun film trouvé',
-                        style: TextStyle(color: Colors.grey),
+                        style: TextStyle(
+                          color: theme.colorScheme.onSurface.withValues(
+                            alpha: 0.5,
+                          ),
+                        ),
                       ),
                     );
                   }
-
                   if (searchState is SearchError) {
                     return Center(
                       child: Text(
@@ -204,13 +193,11 @@ class _HomePageState extends State<HomePage> {
                     );
                   }
 
-                  // Films populaires avec pagination
                   return BlocBuilder<MoviesCubit, MoviesState>(
                     builder: (context, state) {
                       if (state is MoviesLoading) {
                         return const Center(child: CircularProgressIndicator());
                       }
-
                       if (state is MoviesError) {
                         return Center(
                           child: Text(
@@ -219,7 +206,6 @@ class _HomePageState extends State<HomePage> {
                           ),
                         );
                       }
-
                       if (state is MoviesLoaded || state is MoviesLoadingMore) {
                         final movies = state is MoviesLoaded
                             ? state.movies
@@ -245,8 +231,6 @@ class _HomePageState extends State<HomePage> {
                                 ),
                               ),
                             ),
-
-                            // Spinner en bas pendant le chargement de la page suivante
                             if (state is MoviesLoadingMore)
                               const SliverToBoxAdapter(
                                 child: Padding(
@@ -259,7 +243,6 @@ class _HomePageState extends State<HomePage> {
                           ],
                         );
                       }
-
                       return const SizedBox.shrink();
                     },
                   );
@@ -272,7 +255,6 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  // Widget réutilisable pour afficher une grille de films
   Widget _buildGrid(BuildContext context, movies) {
     return GridView.builder(
       padding: const EdgeInsets.all(12),
@@ -283,9 +265,7 @@ class _HomePageState extends State<HomePage> {
         mainAxisSpacing: 12,
       ),
       itemCount: movies.length,
-      itemBuilder: (context, index) {
-        return MovieCard(movie: movies[index]);
-      },
+      itemBuilder: (context, index) => MovieCard(movie: movies[index]),
     );
   }
 }

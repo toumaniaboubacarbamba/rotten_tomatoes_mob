@@ -16,7 +16,7 @@ class GenrePage extends StatelessWidget {
       appBar: AppBar(
         title: const Row(
           children: [
-            Icon(Icons.category, color: Colors.red),
+            Icon(Icons.category_outlined, color: Colors.red),
             SizedBox(width: 8),
             Text('Catégories', style: TextStyle(fontWeight: FontWeight.bold)),
           ],
@@ -38,21 +38,24 @@ class GenrePage extends StatelessWidget {
           if (state is GenreLoaded) {
             return Column(
               children: [
-                // Liste horizontale des genres
+                // Liste genres
                 SizedBox(
-                  height: 50,
+                  height: 52,
                   child: ListView.builder(
                     scrollDirection: Axis.horizontal,
-                    padding: const EdgeInsets.symmetric(horizontal: 12),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 4,
+                    ),
                     itemCount: state.genres.length,
                     itemBuilder: (context, index) {
                       final genre = state.genres[index];
                       final isSelected = state.selectedGenre?.id == genre.id;
-
                       return GestureDetector(
                         onTap: () =>
                             context.read<GenreCubit>().selectGenre(genre),
-                        child: Container(
+                        child: AnimatedContainer(
+                          duration: const Duration(milliseconds: 200),
                           margin: const EdgeInsets.only(right: 8),
                           padding: const EdgeInsets.symmetric(
                             horizontal: 16,
@@ -72,6 +75,15 @@ class GenrePage extends StatelessWidget {
                                   ? Colors.grey[800]!
                                   : Colors.grey[300]!,
                             ),
+                            boxShadow: isSelected
+                                ? [
+                                    BoxShadow(
+                                      color: Colors.red.withValues(alpha: 0.3),
+                                      blurRadius: 8,
+                                      offset: const Offset(0, 2),
+                                    ),
+                                  ]
+                                : [],
                           ),
                           child: Text(
                             genre.name,
@@ -84,6 +96,7 @@ class GenrePage extends StatelessWidget {
                               fontWeight: isSelected
                                   ? FontWeight.bold
                                   : FontWeight.normal,
+                              fontSize: 13,
                             ),
                           ),
                         ),
@@ -91,9 +104,8 @@ class GenrePage extends StatelessWidget {
                     },
                   ),
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: 8),
 
-                // Films du genre sélectionné
                 Expanded(
                   child: state.selectedGenre == null
                       ? Center(
@@ -103,18 +115,29 @@ class GenrePage extends StatelessWidget {
                               Icon(
                                 Icons.movie_filter,
                                 color: theme.colorScheme.onSurface.withValues(
-                                  alpha: 0.3,
+                                  alpha: 0.2,
                                 ),
-                                size: 64,
+                                size: 72,
                               ),
                               const SizedBox(height: 16),
                               Text(
                                 'Sélectionne un genre',
                                 style: TextStyle(
                                   color: theme.colorScheme.onSurface.withValues(
-                                    alpha: 0.5,
+                                    alpha: 0.4,
                                   ),
                                   fontSize: 16,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                              const SizedBox(height: 8),
+                              Text(
+                                'pour découvrir des films 🎬',
+                                style: TextStyle(
+                                  color: theme.colorScheme.onSurface.withValues(
+                                    alpha: 0.3,
+                                  ),
+                                  fontSize: 13,
                                 ),
                               ),
                             ],
@@ -123,7 +146,7 @@ class GenrePage extends StatelessWidget {
                       : state.movies.isEmpty
                       ? const Center(child: CircularProgressIndicator())
                       : GridView.builder(
-                          padding: const EdgeInsets.all(12),
+                          padding: const EdgeInsets.fromLTRB(12, 4, 12, 12),
                           gridDelegate:
                               const SliverGridDelegateWithFixedCrossAxisCount(
                                 crossAxisCount: 2,

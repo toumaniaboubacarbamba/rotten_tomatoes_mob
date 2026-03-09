@@ -24,6 +24,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   final _scrollController = ScrollController();
+  final _searchController = TextEditingController();
 
   @override
   void initState() {
@@ -34,6 +35,7 @@ class _HomePageState extends State<HomePage> {
   @override
   void dispose() {
     _scrollController.dispose();
+    _searchController.dispose();
     super.dispose();
   }
 
@@ -61,18 +63,32 @@ class _HomePageState extends State<HomePage> {
       child: Scaffold(
         appBar: AppBar(
           backgroundColor: Colors.red[700],
-          title: const Text(
-            'Rotten Tomatoes',
-            style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white),
+          elevation: 0,
+          title: Row(
+            children: [
+              const Icon(Icons.movie_filter, color: Colors.white, size: 22),
+              const SizedBox(width: 8),
+              const Text(
+                'Rotten Tomatoes',
+                style: TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                  fontSize: 18,
+                ),
+              ),
+            ],
           ),
           actions: [
+            // Catégories
             IconButton(
-              icon: const Icon(Icons.category, color: Colors.white),
+              icon: const Icon(Icons.category_outlined, color: Colors.white),
               onPressed: () => Navigator.push(
                 context,
                 MaterialPageRoute(builder: (_) => const GenrePage()),
               ),
             ),
+
+            // Favoris avec badge
             BlocBuilder<FavoritesCubit, FavoritesState>(
               builder: (context, favState) {
                 int count = favState is FavoritesLoaded
@@ -82,7 +98,10 @@ class _HomePageState extends State<HomePage> {
                   alignment: Alignment.center,
                   children: [
                     IconButton(
-                      icon: const Icon(Icons.favorite, color: Colors.white),
+                      icon: const Icon(
+                        Icons.favorite_outlined,
+                        color: Colors.white,
+                      ),
                       onPressed: () => Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -119,50 +138,95 @@ class _HomePageState extends State<HomePage> {
                 );
               },
             ),
+
+            // Profil
             IconButton(
-              icon: const Icon(Icons.person, color: Colors.white),
+              icon: const Icon(Icons.person_outlined, color: Colors.white),
               onPressed: () => Navigator.push(
                 context,
                 MaterialPageRoute(builder: (_) => const ProfilePage()),
               ),
             ),
-            IconButton(
-              icon: const Icon(Icons.logout, color: Colors.white),
-              onPressed: () => context.read<AuthBloc>().add(LogoutRequested()),
-            ),
           ],
         ),
+
         body: Column(
           children: [
             // Barre de recherche
-            Padding(
-              padding: const EdgeInsets.all(12),
+            Container(
+              color: Colors.red[700],
+              padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
               child: TextField(
+                controller: _searchController,
                 decoration: InputDecoration(
                   hintText: 'Rechercher un film...',
+                  hintStyle: TextStyle(
+                    color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
+                    fontSize: 14,
+                  ),
                   prefixIcon: Icon(
                     Icons.search,
                     color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
                   ),
                   suffixIcon: IconButton(
-                    onPressed: () => context.read<SearchCubit>().clearSearch(),
+                    onPressed: () {
+                      _searchController.clear();
+                      context.read<SearchCubit>().clearSearch();
+                    },
                     icon: Icon(
                       Icons.clear,
                       color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
                     ),
                   ),
                   filled: true,
-                  fillColor: isDark ? Colors.grey[900] : Colors.grey[200],
+                  fillColor: isDark ? const Color(0xFF1A1A1A) : Colors.white,
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(14),
                     borderSide: BorderSide.none,
                   ),
+                  contentPadding: const EdgeInsets.symmetric(vertical: 12),
                 ),
                 onChanged: (query) => context.read<SearchCubit>().search(query),
               ),
             ),
 
-            // Contenu
+            // Titre section
+            Padding(
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+              child: Row(
+                children: [
+                  Text(
+                    'Films populaires',
+                    style: TextStyle(
+                      color: theme.colorScheme.onSurface,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const Spacer(),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 4,
+                    ),
+                    decoration: BoxDecoration(
+                      color: Colors.red.withValues(alpha: 0.1),
+                      borderRadius: BorderRadius.circular(99),
+                    ),
+                    child: const Text(
+                      '🔥 Tendances',
+                      style: TextStyle(
+                        color: Colors.red,
+                        fontSize: 11,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+
+            // Contenu films
             Expanded(
               child: BlocBuilder<SearchCubit, SearchState>(
                 builder: (context, searchState) {
@@ -174,13 +238,27 @@ class _HomePageState extends State<HomePage> {
                   }
                   if (searchState is SearchEmpty) {
                     return Center(
-                      child: Text(
-                        '🎬 Aucun film trouvé',
-                        style: TextStyle(
-                          color: theme.colorScheme.onSurface.withValues(
-                            alpha: 0.5,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.search_off,
+                            size: 56,
+                            color: theme.colorScheme.onSurface.withValues(
+                              alpha: 0.3,
+                            ),
                           ),
-                        ),
+                          const SizedBox(height: 12),
+                          Text(
+                            'Aucun film trouvé',
+                            style: TextStyle(
+                              color: theme.colorScheme.onSurface.withValues(
+                                alpha: 0.5,
+                              ),
+                              fontSize: 16,
+                            ),
+                          ),
+                        ],
                       ),
                     );
                   }
@@ -215,7 +293,7 @@ class _HomePageState extends State<HomePage> {
                           controller: _scrollController,
                           slivers: [
                             SliverPadding(
-                              padding: const EdgeInsets.all(12),
+                              padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
                               sliver: SliverGrid(
                                 gridDelegate:
                                     const SliverGridDelegateWithFixedCrossAxisCount(
@@ -257,7 +335,7 @@ class _HomePageState extends State<HomePage> {
 
   Widget _buildGrid(BuildContext context, movies) {
     return GridView.builder(
-      padding: const EdgeInsets.all(12),
+      padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
         crossAxisCount: 2,
         childAspectRatio: 0.65,

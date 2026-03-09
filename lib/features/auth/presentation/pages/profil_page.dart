@@ -39,7 +39,6 @@ class ProfilePage extends StatelessWidget {
     final isDark = theme.brightness == Brightness.dark;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Mon Profil')),
       body: BlocListener<AuthBloc, AuthState>(
         listener: (context, state) {
           if (state is Unauthenticated) {
@@ -54,180 +53,326 @@ class ProfilePage extends StatelessWidget {
             if (state is! Authenticated) return const SizedBox.shrink();
             final user = state.user;
 
-            return SingleChildScrollView(
-              padding: const EdgeInsets.all(24),
-              child: Column(
-                children: [
-                  const SizedBox(height: 24),
-
-                  // Avatar
-                  CircleAvatar(
-                    radius: 50,
-                    backgroundColor: Colors.red,
-                    child: Text(
-                      user.name.isNotEmpty ? user.name[0].toUpperCase() : '?',
-                      style: const TextStyle(
-                        fontSize: 40,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
+            return CustomScrollView(
+              slivers: [
+                // Header avec dégradé
+                SliverToBoxAdapter(
+                  child: Container(
+                    height: 250,
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [Colors.red[900]!, Colors.red[600]!],
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 16),
-
-                  // Nom
-                  Text(
-                    user.name,
-                    style: TextStyle(
-                      color: theme.colorScheme.onSurface,
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-
-                  // Email
-                  Text(
-                    user.email,
-                    style: TextStyle(
-                      color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
-                      fontSize: 14,
-                    ),
-                  ),
-                  const SizedBox(height: 32),
-
-                  // Stats favoris
-                  BlocBuilder<FavoritesCubit, FavoritesState>(
-                    builder: (context, favState) {
-                      final favCount = favState is FavoritesLoaded
-                          ? favState.movies.length
-                          : 0;
-                      return Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    child: SafeArea(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          _buildStat(
-                            context,
-                            '❤️',
-                            favCount.toString(),
-                            'Favoris',
-                            onTap: () => Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (_) => const FavoritesPage(),
+                          // Avatar
+                          Container(
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              border: Border.all(color: Colors.white, width: 3),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withValues(alpha: 0.3),
+                                  blurRadius: 12,
+                                  offset: const Offset(0, 4),
+                                ),
+                              ],
+                            ),
+                            child: CircleAvatar(
+                              radius: 45,
+                              backgroundColor: Colors.red[800],
+                              child: Text(
+                                user.name.isNotEmpty
+                                    ? user.name[0].toUpperCase()
+                                    : '?',
+                                style: const TextStyle(
+                                  fontSize: 38,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
                               ),
                             ),
                           ),
+                          const SizedBox(height: 12),
+
+                          // Nom
+                          Text(
+                            user.name,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 22,
+                              fontWeight: FontWeight.bold,
+                              letterSpacing: 0.5,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+
+                          // Email
+                          Text(
+                            user.email,
+                            style: TextStyle(
+                              color: Colors.white.withValues(alpha: 0.8),
+                              fontSize: 13,
+                            ),
+                          ),
                         ],
-                      );
-                    },
-                  ),
-                  const SizedBox(height: 32),
-
-                  // Infos du compte
-                  _buildInfoCard(
-                    context,
-                    icon: Icons.person,
-                    label: 'Nom complet',
-                    value: user.name,
-                  ),
-                  const SizedBox(height: 12),
-                  _buildInfoCard(
-                    context,
-                    icon: Icons.email,
-                    label: 'Email',
-                    value: user.email,
-                  ),
-                  const SizedBox(height: 12),
-                  _buildInfoCard(
-                    context,
-                    icon: Icons.calendar_today,
-                    label: 'Membre depuis',
-                    value: _formatDate(user.createdAt),
-                  ),
-                  const SizedBox(height: 16),
-
-                  // Bouton modifier profil
-                  SizedBox(
-                    width: double.infinity,
-                    height: 48,
-                    child: OutlinedButton.icon(
-                      style: OutlinedButton.styleFrom(
-                        backgroundColor: Colors.red[700],
-                        side: const BorderSide(color: Colors.red),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                      icon: const Icon(Icons.edit, color: Colors.white),
-                      label: const Text(
-                        'Modifier le profil',
-                        style: TextStyle(color: Colors.white),
-                      ),
-                      onPressed: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => EditProfilePage(user: user),
-                        ),
                       ),
                     ),
                   ),
-                  const SizedBox(height: 16),
+                ),
 
-                  // Bouton thème
-                  SizedBox(
-                    width: double.infinity,
-                    height: 48,
-                    child: OutlinedButton.icon(
-                      style: OutlinedButton.styleFrom(
-                        side: BorderSide(
-                          color: isDark ? Colors.grey[700]! : Colors.grey[400]!,
+                SliverToBoxAdapter(
+                  child: Padding(
+                    padding: const EdgeInsets.all(20),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Stats
+                        BlocBuilder<FavoritesCubit, FavoritesState>(
+                          builder: (context, favState) {
+                            final favCount = favState is FavoritesLoaded
+                                ? favState.movies.length
+                                : 0;
+                            return GestureDetector(
+                              onTap: () => Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => const FavoritesPage(),
+                                ),
+                              ),
+                              child: Container(
+                                padding: const EdgeInsets.all(20),
+                                decoration: BoxDecoration(
+                                  color: theme.cardColor,
+                                  borderRadius: BorderRadius.circular(16),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withValues(
+                                        alpha: 0.05,
+                                      ),
+                                      blurRadius: 10,
+                                      offset: const Offset(0, 2),
+                                    ),
+                                  ],
+                                ),
+                                child: Row(
+                                  children: [
+                                    Container(
+                                      padding: const EdgeInsets.all(12),
+                                      decoration: BoxDecoration(
+                                        color: Colors.red.withValues(
+                                          alpha: 0.1,
+                                        ),
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                      child: const Icon(
+                                        Icons.favorite,
+                                        color: Colors.red,
+                                        size: 24,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 16),
+                                    Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          '$favCount films favoris',
+                                          style: TextStyle(
+                                            color: theme.colorScheme.onSurface,
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                        Text(
+                                          'Voir ma liste',
+                                          style: TextStyle(
+                                            color: Colors.red[400],
+                                            fontSize: 12,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    const Spacer(),
+                                    Icon(
+                                      Icons.arrow_forward_ios,
+                                      color: theme.colorScheme.onSurface
+                                          .withValues(alpha: 0.3),
+                                      size: 16,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            );
+                          },
                         ),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
+                        const SizedBox(height: 24),
+
+                        // Section Compte
+                        Text(
+                          'MON COMPTE',
+                          style: TextStyle(
+                            color: theme.colorScheme.onSurface.withValues(
+                              alpha: 0.4,
+                            ),
+                            fontSize: 11,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 1.5,
+                          ),
                         ),
-                      ),
-                      icon: Icon(
-                        isDark ? Icons.light_mode : Icons.dark_mode,
-                        color: isDark ? Colors.yellow : Colors.blueGrey,
-                      ),
-                      label: Text(
-                        isDark
-                            ? 'Passer en mode clair'
-                            : 'Passer en mode sombre',
-                        style: TextStyle(
-                          color: isDark ? Colors.yellow : Colors.blueGrey,
+                        const SizedBox(height: 12),
+
+                        Container(
+                          decoration: BoxDecoration(
+                            color: theme.cardColor,
+                            borderRadius: BorderRadius.circular(16),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withValues(alpha: 0.05),
+                                blurRadius: 10,
+                                offset: const Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                          child: Column(
+                            children: [
+                              _buildSettingRow(
+                                context,
+                                icon: Icons.person_outline,
+                                label: 'Nom complet',
+                                value: user.name,
+                                isFirst: true,
+                              ),
+                              _buildDivider(theme),
+                              _buildSettingRow(
+                                context,
+                                icon: Icons.email_outlined,
+                                label: 'Email',
+                                value: user.email,
+                              ),
+                              _buildDivider(theme),
+                              _buildSettingRow(
+                                context,
+                                icon: Icons.calendar_today_outlined,
+                                label: 'Membre depuis',
+                                value: _formatDate(user.createdAt),
+                                isLast: true,
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                      onPressed: () => context.read<ThemeCubit>().toggleTheme(),
+                        const SizedBox(height: 24),
+
+                        // Section Paramètres
+                        Text(
+                          'PARAMÈTRES',
+                          style: TextStyle(
+                            color: theme.colorScheme.onSurface.withValues(
+                              alpha: 0.4,
+                            ),
+                            fontSize: 11,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 1.5,
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+
+                        Container(
+                          decoration: BoxDecoration(
+                            color: theme.cardColor,
+                            borderRadius: BorderRadius.circular(16),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.black.withValues(alpha: 0.05),
+                                blurRadius: 10,
+                                offset: const Offset(0, 2),
+                              ),
+                            ],
+                          ),
+                          child: Column(
+                            children: [
+                              // Modifier profil
+                              _buildActionRow(
+                                context,
+                                icon: Icons.edit_outlined,
+                                label: 'Modifier le profil',
+                                iconColor: Colors.blue,
+                                isFirst: true,
+                                onTap: () => Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => EditProfilePage(user: user),
+                                  ),
+                                ),
+                              ),
+                              _buildDivider(theme),
+
+                              // Thème
+                              BlocBuilder<ThemeCubit, bool>(
+                                builder: (context, isDarkMode) {
+                                  return _buildActionRow(
+                                    context,
+                                    icon: isDarkMode
+                                        ? Icons.light_mode_outlined
+                                        : Icons.dark_mode_outlined,
+                                    label: isDarkMode
+                                        ? 'Mode clair'
+                                        : 'Mode sombre',
+                                    iconColor: isDarkMode
+                                        ? Colors.orange
+                                        : Colors.indigo,
+                                    trailing: Switch(
+                                      value: isDarkMode,
+                                      onChanged: (_) => context
+                                          .read<ThemeCubit>()
+                                          .toggleTheme(),
+                                      activeColor: Colors.red,
+                                    ),
+                                    isLast: true,
+                                  );
+                                },
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 24),
+
+                        // Bouton déconnexion
+                        SizedBox(
+                          width: double.infinity,
+                          height: 52,
+                          child: ElevatedButton.icon(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.red[900],
+                              foregroundColor: Colors.white,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(14),
+                              ),
+                              elevation: 0,
+                            ),
+                            icon: const Icon(Icons.logout),
+                            label: const Text(
+                              'Se déconnecter',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            onPressed: () =>
+                                context.read<AuthBloc>().add(LogoutRequested()),
+                          ),
+                        ),
+                        const SizedBox(height: 32),
+                      ],
                     ),
                   ),
-                  const SizedBox(height: 20),
-
-                  // Bouton déconnexion
-                  SizedBox(
-                    width: double.infinity,
-                    height: 52,
-                    child: ElevatedButton.icon(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.red[900],
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                      icon: const Icon(Icons.logout),
-                      label: const Text(
-                        'Se déconnecter',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      onPressed: () =>
-                          context.read<AuthBloc>().add(LogoutRequested()),
-                    ),
-                  ),
-                ],
-              ),
+                ),
+              ],
             );
           },
         ),
@@ -235,64 +380,29 @@ class ProfilePage extends StatelessWidget {
     );
   }
 
-  Widget _buildStat(
-    BuildContext context,
-    String emoji,
-    String count,
-    String label, {
-    VoidCallback? onTap,
-  }) {
-    final theme = Theme.of(context);
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
-        decoration: BoxDecoration(
-          color: theme.cardColor,
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Column(
-          children: [
-            Text(emoji, style: const TextStyle(fontSize: 24)),
-            const SizedBox(height: 4),
-            Text(
-              count,
-              style: TextStyle(
-                color: theme.colorScheme.onSurface,
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            Text(
-              label,
-              style: TextStyle(
-                color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
-                fontSize: 12,
-              ),
-            ),
-          ],
-        ),
-      ),
+  Widget _buildDivider(ThemeData theme) {
+    return Divider(
+      height: 1,
+      indent: 56,
+      color: theme.colorScheme.onSurface.withValues(alpha: 0.08),
     );
   }
 
-  Widget _buildInfoCard(
+  Widget _buildSettingRow(
     BuildContext context, {
     required IconData icon,
     required String label,
     required String value,
+    bool isFirst = false,
+    bool isLast = false,
   }) {
     final theme = Theme.of(context);
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: theme.cardColor,
-        borderRadius: BorderRadius.circular(12),
-      ),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       child: Row(
         children: [
           Icon(icon, color: Colors.red, size: 20),
-          const SizedBox(width: 12),
+          const SizedBox(width: 16),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -300,19 +410,72 @@ class ProfilePage extends StatelessWidget {
                 label,
                 style: TextStyle(
                   color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
-                  fontSize: 12,
+                  fontSize: 11,
                 ),
               ),
+              const SizedBox(height: 2),
               Text(
                 value,
                 style: TextStyle(
                   color: theme.colorScheme.onSurface,
                   fontSize: 14,
+                  fontWeight: FontWeight.w500,
                 ),
               ),
             ],
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildActionRow(
+    BuildContext context, {
+    required IconData icon,
+    required String label,
+    required Color iconColor,
+    bool isFirst = false,
+    bool isLast = false,
+    VoidCallback? onTap,
+    Widget? trailing,
+  }) {
+    final theme = Theme.of(context);
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.vertical(
+        top: isFirst ? const Radius.circular(16) : Radius.zero,
+        bottom: isLast ? const Radius.circular(16) : Radius.zero,
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        child: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: iconColor.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Icon(icon, color: iconColor, size: 18),
+            ),
+            const SizedBox(width: 16),
+            Text(
+              label,
+              style: TextStyle(
+                color: theme.colorScheme.onSurface,
+                fontSize: 15,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+            const Spacer(),
+            trailing ??
+                Icon(
+                  Icons.arrow_forward_ios,
+                  color: theme.colorScheme.onSurface.withValues(alpha: 0.3),
+                  size: 16,
+                ),
+          ],
+        ),
       ),
     );
   }

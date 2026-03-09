@@ -40,19 +40,25 @@ class FavoritesPage extends StatelessWidget {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(
-                      Icons.favorite_border,
-                      color: theme.colorScheme.onSurface.withValues(alpha: 0.3),
-                      size: 64,
+                    Container(
+                      padding: const EdgeInsets.all(24),
+                      decoration: BoxDecoration(
+                        color: Colors.red.withValues(alpha: 0.1),
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        Icons.favorite_border,
+                        color: Colors.red.withValues(alpha: 0.5),
+                        size: 56,
+                      ),
                     ),
-                    const SizedBox(height: 16),
+                    const SizedBox(height: 20),
                     Text(
                       'Aucun favori pour le moment',
                       style: TextStyle(
-                        color: theme.colorScheme.onSurface.withValues(
-                          alpha: 0.5,
-                        ),
-                        fontSize: 16,
+                        color: theme.colorScheme.onSurface,
+                        fontSize: 17,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
                     const SizedBox(height: 8),
@@ -69,17 +75,37 @@ class FavoritesPage extends StatelessWidget {
                 ),
               );
             }
-            return GridView.builder(
-              padding: const EdgeInsets.all(12),
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                childAspectRatio: 0.65,
-                crossAxisSpacing: 12,
-                mainAxisSpacing: 12,
-              ),
-              itemCount: state.movies.length,
-              itemBuilder: (context, index) =>
-                  MovieCard(movie: state.movies[index]),
+
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+                  child: Text(
+                    '${state.movies.length} film${state.movies.length > 1 ? 's' : ''} sauvegardé${state.movies.length > 1 ? 's' : ''}',
+                    style: TextStyle(
+                      color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
+                      fontSize: 13,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: GridView.builder(
+                    padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                          crossAxisCount: 2,
+                          childAspectRatio: 0.65,
+                          crossAxisSpacing: 12,
+                          mainAxisSpacing: 12,
+                        ),
+                    itemCount: state.movies.length,
+                    itemBuilder: (context, index) =>
+                        MovieCard(movie: state.movies[index]),
+                  ),
+                ),
+              ],
             );
           }
           return const SizedBox.shrink();

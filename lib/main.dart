@@ -11,6 +11,7 @@ import 'package:rotten_tomatoes/features/movies/presentation/cubit/genre_cubit.d
 import 'package:rotten_tomatoes/features/movies/presentation/cubit/movies_cubit.dart';
 import 'package:rotten_tomatoes/features/movies/presentation/cubit/search_cubit.dart';
 import 'package:rotten_tomatoes/features/movies/presentation/pages/home_page.dart';
+import 'package:rotten_tomatoes/features/splash/presentation/splash_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized(); // Nécessaire pour les opérations asynchrones avant runApp
@@ -39,25 +40,7 @@ class MainApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         title: 'Rotten Tomatoes',
         theme: ThemeData.dark(),
-        // BlocBuilder écoute AuthBloc pour décider quelle page afficher
-        home: BlocBuilder<AuthBloc, AuthState>(
-          builder: (context, state) {
-            if (state is AuthLoading || state is AuthInitial) {
-              // Pendant la vérification du cache → écran de chargement
-              return const Scaffold(
-                backgroundColor: Colors.black,
-                body: Center(child: CircularProgressIndicator()),
-              );
-            }
-            if (state is Authenticated) {
-              // Connecté → on charge les films et on affiche HomePage
-              context.read<MoviesCubit>().loadMovies();
-              return const HomePage();
-            }
-            // Pas connecté → LoginPage
-            return const LoginPage();
-          },
-        ),
+          home: const SplashPage(),
       ),
     );
   }

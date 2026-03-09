@@ -18,6 +18,7 @@ dependencies:
   go_router:
   cached_network_image:
   flutter_local_notifications: ^20.1.0
+  flutter_native_splash: ^2.4.7
 
 dev_dependencies:
   flutter_test:
@@ -32,4 +33,11 @@ flutter:
 
   assets:
     - assets/images/rotten.jpg
+  
+flutter_native_splash:
+  color: "#000000"
+  image: assets/images/rotten.jpg
+  android: true
+  ios: false
+  fullscreen: true
 

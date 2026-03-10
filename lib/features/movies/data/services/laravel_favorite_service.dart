@@ -1,8 +1,9 @@
 import 'package:dio/dio.dart';
 import '../../domain/entities/movie.dart';
+import '../../domain/services/favorite_service.dart';
 import '../models/movie_model.dart';
 
-class FavoriteRemoteDataSource {
+class LaravelFavoriteService implements FavoriteService {
   static const _baseUrl = 'https://fullstack-mobile-budgetapp.onrender.com/api';
 
   final Dio _dio = Dio(
@@ -13,19 +14,18 @@ class FavoriteRemoteDataSource {
     ),
   );
 
-  // On passe le token à chaque requête
   Options _authHeaders(String token) {
     return Options(
       headers: {'Authorization': 'Bearer $token', 'Accept': 'application/json'},
     );
   }
 
+  @override
   Future<List<Movie>> getFavorites(String token) async {
     final response = await _dio.get(
       '$_baseUrl/favorites',
       options: _authHeaders(token),
     );
-
     final List data = response.data;
     return data
         .map(
@@ -40,6 +40,7 @@ class FavoriteRemoteDataSource {
         .toList();
   }
 
+  @override
   Future<bool> toggleFavorite(String token, Movie movie) async {
     final response = await _dio.post(
       '$_baseUrl/favorites/toggle',
@@ -52,7 +53,6 @@ class FavoriteRemoteDataSource {
       },
       options: _authHeaders(token),
     );
-
     return response.data['is_favorite'];
   }
 }

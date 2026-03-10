@@ -49,7 +49,6 @@ class MainApp extends StatelessWidget {
               );
             }
             if (state is Authenticated) {
-              // Connecté  on charge les films et on affiche HomePage
               context.read<MoviesCubit>().loadMovies();
               return const HomePage();
             }

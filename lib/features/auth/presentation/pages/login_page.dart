@@ -49,7 +49,6 @@ class _LoginPageState extends State<LoginPage> {
         },
         child: Stack(
           children: [
-            // Fond dégradé en haut
             Container(
               height: MediaQuery.of(context).size.height * 0.4,
               decoration: BoxDecoration(
@@ -89,7 +88,7 @@ class _LoginPageState extends State<LoginPage> {
                             ),
                             SizedBox(height: 4),
                             Text(
-                              'Découvre les meilleurs films 🎬',
+                              'Découvre les meilleurs films !',
                               style: TextStyle(
                                 color: Colors.white70,
                                 fontSize: 13,

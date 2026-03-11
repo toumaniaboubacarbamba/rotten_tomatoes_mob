@@ -1,22 +1,22 @@
 import 'package:dartz/dartz.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:convert';
 import '../../../../core/error/failures.dart';
 import '../../domain/entities/user.dart';
 import '../../domain/repositories/auth_repository.dart';
-import '../datasources/auth_remote_data_source.dart';
+import '../../domain/services/auth_service.dart';
 import '../models/user_model.dart';
-import 'dart:convert';
 
 class AuthRepositoryImpl implements AuthRepository {
-  final AuthRemoteDataSource remoteDataSource;
+  final AuthService authService;
   final SharedPreferences sharedPreferences;
 
-  AuthRepositoryImpl(this.remoteDataSource, this.sharedPreferences);
+  AuthRepositoryImpl(this.authService, this.sharedPreferences);
 
   @override
   Future<Either<Failure, User>> login(String email, String password) async {
     try {
-      final user = await remoteDataSource.login(email, password);
+      final user = await authService.login(email, password);
       return Right(user);
     } catch (e) {
       return Left(ServerFailure(e.toString()));
@@ -26,14 +26,13 @@ class AuthRepositoryImpl implements AuthRepository {
   @override
   Future<Either<Failure, Unit>> logout() async {
     try {
-      // On récupère le token depuis le cache avant de le supprimer
       final userJson = sharedPreferences.getString('cached_user');
       String token = '';
       if (userJson != null) {
         final user = UserModel.fromJson(jsonDecode(userJson));
         token = user.token;
       }
-      await remoteDataSource.logout(token);
+      await authService.logout(token);
       return const Right(unit);
     } catch (e) {
       return Left(ServerFailure(e.toString()));
@@ -43,7 +42,7 @@ class AuthRepositoryImpl implements AuthRepository {
   @override
   Future<Either<Failure, User>> getCachedUser() async {
     try {
-      final user = await remoteDataSource.getCachedUser();
+      final user = await authService.getCachedUser();
       return Right(user);
     } catch (e) {
       return Left(CacheFailure('Aucun utilisateur connecté'));
@@ -57,8 +56,7 @@ class AuthRepositoryImpl implements AuthRepository {
     String password,
   ) async {
     try {
-      // l'API attend d'abord le nom, puis l'email et enfin le mot de passe
-      final user = await remoteDataSource.register(name, email, password);
+      final user = await authService.register(name, email, password);
       return Right(user);
     } catch (e) {
       return Left(ServerFailure(e.toString()));
@@ -68,7 +66,7 @@ class AuthRepositoryImpl implements AuthRepository {
   @override
   Future<Either<Failure, User>> updateProfile(String token, String name) async {
     try {
-      final user = await remoteDataSource.updateProfile(token, name);
+      final user = await authService.updateProfile(token, name);
       return Right(user);
     } catch (e) {
       return Left(ServerFailure(e.toString()));
@@ -82,11 +80,7 @@ class AuthRepositoryImpl implements AuthRepository {
     String newPassword,
   ) async {
     try {
-      await remoteDataSource.updatePassword(
-        token,
-        currentPassword,
-        newPassword,
-      );
+      await authService.updatePassword(token, currentPassword, newPassword);
       return const Right(unit);
     } catch (e) {
       return Left(ServerFailure(e.toString()));

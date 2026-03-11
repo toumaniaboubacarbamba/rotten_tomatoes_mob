@@ -1,14 +1,16 @@
 import '../../../../core/network/dio_client.dart';
 import '../../domain/entities/genre.dart';
+import '../../domain/entities/movie.dart';
+import '../../domain/services/movie_service.dart';
 import '../models/movie_model.dart';
 
-class MovieRemoteDataSource {
+class TmdbMovieService implements MovieService {
   final DioClient dioClient;
 
-  MovieRemoteDataSource(this.dioClient);
+  TmdbMovieService(this.dioClient);
 
-  // On ajoute le paramètre page
-  Future<List<MovieModel>> getPopularMovies({int page = 1}) async {
+  @override
+  Future<List<Movie>> getPopularMovies({int page = 1}) async {
     final response = await dioClient.dio.get(
       '/movie/popular',
       queryParameters: {'page': page},
@@ -17,7 +19,8 @@ class MovieRemoteDataSource {
     return results.map((json) => MovieModel.fromJson(json)).toList();
   }
 
-  Future<List<MovieModel>> searchMovies(String query) async {
+  @override
+  Future<List<Movie>> searchMovies(String query) async {
     final response = await dioClient.dio.get(
       '/search/movie',
       queryParameters: {'query': query},
@@ -26,6 +29,7 @@ class MovieRemoteDataSource {
     return results.map((json) => MovieModel.fromJson(json)).toList();
   }
 
+  @override
   Future<List<Genre>> getGenres() async {
     final response = await dioClient.dio.get('/genre/movie/list');
     final List genres = response.data['genres'];
@@ -34,7 +38,8 @@ class MovieRemoteDataSource {
         .toList();
   }
 
-  Future<List<MovieModel>> getMoviesByGenre(int genreId) async {
+  @override
+  Future<List<Movie>> getMoviesByGenre(int genreId) async {
     final response = await dioClient.dio.get(
       '/discover/movie',
       queryParameters: {'with_genres': genreId},

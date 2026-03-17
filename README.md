@@ -1,141 +1,68 @@
-# 🍅 Rotten Tomatoes Flutter
+#  Rotten Tomatoes Mobile
 
-Une application mobile Flutter de découverte de films
-construite avec une Clean Architecture, BLoC/Cubit
-et l'API TMDB.
+Application Flutter de découverte de films, construite avec une architecture MVVM simple.
 
-## ✨ Fonctionnalités
+##  Fonctionnalités
 
-- 🔐 Authentification (Login / Register / Logout)
-- 🎬 Liste des films populaires avec pagination infinie
-- 🔍 Recherche de films en temps réel
-- 🎭 Filtrage par catégorie / genre
-- ❤️ Gestion des favoris (synchronisés via API)
-- 👤 Page profil (modifier nom & mot de passe)
-- 🌙 Thème clair / sombre persistant
-- 🔔 Notifications locales
-- 💫 Splash screen animé
+- Authentification (inscription, connexion, déconnexion)
+- Modification du profil et du mot de passe
+- Liste des films populaires avec pagination
+- Recherche de films en temps réel
+- Filtrage par catégorie/genre
+- Gestion des favoris (liés au compte utilisateur)
+- Thème clair / sombre
+- Notifications locales à la connexion
+- Splash screen animé
 
-## 🏛️ Architecture
-
-Ce projet suit les principes de la **Clean Architecture**
-organisée en 3 couches :
-
-- **Domain** — Entités, interfaces Repositories, interfaces Services, Use Cases
-- **Data** — Models, implémentations Services, implémentations Repositories
-- **Presentation** — Cubits, BLoCs, Pages, Widgets
-
-### Schéma des couches
+##  Architecture MVVM Simple
 ```
-Presentation (Cubit/BLoC)
-       ↓
-   Use Cases
-       ↓
-  Repositories (interface domain → implémentation data)
-       ↓
-   Services (interface domain → implémentation data)
+lib/
+├── entities/        # Objets métier purs (Account, Movie, Genre)
+├── models/          # JSON + exceptions (UserModel, MovieModel, AppException)
+├── services/        # Communication externe (ApiService, StorageService)
+├── engines/         # Logique métier (AuthManager, MovieManager)
+├── view_models/     # Cubits/Blocs (AuthViewModel, MoviesViewModel...)
+├── ui/
+│   ├── pages/       # Écrans de l'app
+│   └── widgets/     # Composants réutilisables
+├── utils/           # Utilitaires (AppTheme)
+└── main.dart
 ```
 
-### Pourquoi des Services ?
+##  Flux de données
+```
+UI → ViewModel → Engine → Service → API/Storage
+             ↑_________________________________|
+                      (état retourné)
+```
 
-Les **interfaces** dans `domain/services/` définissent **le contrat** (quoi faire).
-Les **implémentations** dans `data/services/` définissent **le comment** (Dio, Laravel, TMDB...).
+##  APIs utilisées
 
-> Si on change d'API demain, on crée une nouvelle implémentation
-> sans toucher au reste du code.
+- **TMDB** : `https://api.themoviedb.org/3` — Films, genres, recherche
+- **Laravel** : `https://fullstack-mobile-budgetapp.onrender.com/api` — Auth, favoris
 
-## 🛠️ Technologies utilisées
+##  Stack technique
 
-| Package | Rôle |
-|--------|------|
-| flutter_bloc | Gestion d'état (Cubit & BLoC) |
-| get_it | Injection de dépendances |
+| Outil | Usage |
+|-------|-------|
+| Flutter | Framework UI |
+| flutter_bloc | Gestion d'état (Cubit/Bloc) |
 | dio | Requêtes HTTP |
-| dartz | Programmation fonctionnelle (Either) |
-| equatable | Comparaison d'objets |
 | shared_preferences | Stockage local |
+| equatable | Comparaison d'objets |
 | flutter_local_notifications | Notifications locales |
-| flutter_native_splash | Splash screen natif |
-| bloc_test | Tests unitaires BLoC |
 
-## 🌐 APIs utilisées
-
-| API | Rôle |
-|-----|------|
-| [TMDB](https://www.themoviedb.org/) | Films, recherche, genres |
-| [Laravel (Render)](https://fullstack-mobile-budgetapp.onrender.com) | Auth, favoris |
-
-## 🚀 Lancer le projet
-
-1. Clone le repo
+##  Lancer le projet
 ```bash
-git clone https://github.com/ton-username/rotten_tomatoes.git
-```
+# Cloner le projet
+git clone <url>
 
-2. Installe les dépendances
-```bash
+# Installer les dépendances
 flutter pub get
-```
 
-3. Ajoute ta clé API TMDB dans
-```
-lib/core/network/dio_client.dart
-```
-
-4. Lance l'app
-```bash
+# Lancer l'app
 flutter run
 ```
 
-## 🧪 Tests
-```bash
-flutter test
-```
 
-## 🔑 Identifiants de test
-```
-Email    : yami@test.com
-Password : 123456
-```
-
-## 📁 Structure du projet
-```
-lib/
-├── core/
-│   ├── error/
-│   ├── network/
-│   ├── services/        ← NotificationService
-│   ├── theme/           ← ThemeCubit, AppTheme
-│   └── di/              ← injection.dart
-└── features/
-    ├── auth/
-    │   ├── data/
-    │   │   ├── services/        ← LaravelAuthService
-    │   │   ├── models/
-    │   │   └── repositories/
-    │   ├── domain/
-    │   │   ├── entities/
-    │   │   ├── services/        ← AuthService (interface)
-    │   │   ├── repositories/
-    │   │   └── usecases/
-    │   └── presentation/
-    │       ├── bloc/
-    │       └── pages/
-    ├── movies/
-    │   ├── data/
-    │   │   ├── services/        ← TmdbMovieService, LaravelFavoriteService
-    │   │   ├── models/
-    │   │   └── repositories/
-    │   ├── domain/
-    │   │   ├── entities/
-    │   │   ├── services/        ← MovieService, FavoriteService (interfaces)
-    │   │   ├── repositories/
-    │   │   └── usecases/
-    │   └── presentation/
-    │       ├── cubit/
-    │       ├── pages/
-    │       └── widgets/
-    └── splash/
-        └── presentation/
-            └── pages/
-```
+##  Réalisé dans le cadre d'un stage Flutter

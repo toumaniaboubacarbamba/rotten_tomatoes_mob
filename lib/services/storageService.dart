@@ -1,3 +1,4 @@
+//Storage service lit/ecrit les données en local (SharedPreferences). C'est lui qui gère le cache de l'utilisateur et le thème.
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/account.dart';

@@ -1,3 +1,4 @@
+// AuthViewModel est le BLoC qui gère l'état de l'authentification (login, register, logout, update profile/password). Il utilise AuthManager pour la logique métier et expose des événements et états pour la UI.
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rotten_tomatoes/core/services/notification_service.dart';
 import '../engines/auth_manager.dart';

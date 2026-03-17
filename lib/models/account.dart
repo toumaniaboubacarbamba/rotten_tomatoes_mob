@@ -1,3 +1,4 @@
+//Les objets qui savent lire/écrire le JSON. Ils étendent les entities.
 import 'package:rotten_tomatoes/entities/account.dart';
 
 class UserModel extends Account {

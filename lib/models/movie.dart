@@ -1,3 +1,5 @@
+//Les objets qui savent lire/écrire le JSON. Ils étendent les entities.
+
 import '../entities/movie.dart';
 
 class MovieModel extends Movie {

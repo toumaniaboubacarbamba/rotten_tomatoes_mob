@@ -1,3 +1,4 @@
+// GenreViewModel est le BLoC qui gère l'état de la sélection des genres et des films associés. Il utilise MovieManager pour la logique métier et expose des événements et états pour la UI.
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../engines/movie_manager.dart';
 import '../entities/movie.dart';

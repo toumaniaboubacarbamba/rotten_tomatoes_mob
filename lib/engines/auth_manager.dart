@@ -1,7 +1,8 @@
-import '../entities/account.dart';
+//La logique métier AuthManager combine ApiService + StorageService pour login/register/logout.
+import 'package:rotten_tomatoes/entities/account.dart';
 import '../models/errors.dart';
-import '../services/api.dart';
-import '../services/storage.dart';
+import '../services/apiService.dart';
+import '../services/storageService.dart';
 
 class AuthManager {
   final ApiService _api;

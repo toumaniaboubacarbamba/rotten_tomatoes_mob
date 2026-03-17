@@ -1,3 +1,4 @@
+// NotificationService gère les notifications locales de l'app (ajout/retrait favori, bienvenue et autres).
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 class NotificationService {

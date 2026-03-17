@@ -1,3 +1,4 @@
+//Communication avec l'extérieur. ApiService parle à TMDB et Laravel via Dio. 
 import 'package:dio/dio.dart';
 import '../entities/account.dart';
 import '../entities/movie.dart';
@@ -22,7 +23,7 @@ class ApiService {
     headers: {'Authorization': 'Bearer $token'},
   );
 
-  // ── AUTH ──────────────────────────────────────────
+  // ── AUTH ───
 
   Future<UserModel> login(String email, String password) async {
     try {
@@ -110,7 +111,7 @@ class ApiService {
     }
   }
 
-  // ── MOVIES ────────────────────────────────────────
+  // ── MOVIES ───
 
   Future<List<MovieModel>> getPopularMovies({int page = 1}) async {
     final res = await _dio.get(
@@ -162,7 +163,7 @@ class ApiService {
     return results.map((j) => MovieModel.fromJson(j)).toList();
   }
 
-  // ── FAVORITES ─────────────────────────────────────
+  // ── FAVORITES ──
 
   Future<List<Movie>> getFavorites(String token) async {
     final res = await _dio.get(

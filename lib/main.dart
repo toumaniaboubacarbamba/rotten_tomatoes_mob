@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rotten_tomatoes/core/services/notification_service.dart';
-import 'package:rotten_tomatoes/core/theme/app_theme.dart';
+import 'package:rotten_tomatoes/utils/app_theme.dart';
 import 'engines/auth_manager.dart';
 import 'engines/movie_manager.dart';
 import 'services/api.dart';

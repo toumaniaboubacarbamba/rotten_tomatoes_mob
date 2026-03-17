@@ -25,6 +25,9 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     _scrollController.addListener(_onScroll);
+    //
+    context.read<FavoritesViewModel>().load();
+    context.read<MoviesViewModel>().loadMovies();
   }
 
   @override
@@ -83,15 +86,22 @@ class _HomePageState extends State<HomePage> {
             ),
             BlocBuilder<FavoritesViewModel, FavoritesState>(
               builder: (context, favState) {
-                int count = favState is FavoritesLoaded ? favState.movies.length : 0;
+                int count = favState is FavoritesLoaded
+                    ? favState.movies.length
+                    : 0;
                 return Stack(
                   alignment: Alignment.center,
                   children: [
                     IconButton(
-                      icon: const Icon(Icons.favorite_outlined, color: Colors.white),
+                      icon: const Icon(
+                        Icons.favorite_outlined,
+                        color: Colors.white,
+                      ),
                       onPressed: () => Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (_) => const FavoritesPage()),
+                        MaterialPageRoute(
+                          builder: (_) => const FavoritesPage(),
+                        ),
                       ),
                     ),
                     if (count > 0)
@@ -104,7 +114,10 @@ class _HomePageState extends State<HomePage> {
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(10),
                           ),
-                          constraints: const BoxConstraints(minWidth: 16, minHeight: 16),
+                          constraints: const BoxConstraints(
+                            minWidth: 16,
+                            minHeight: 16,
+                          ),
                           child: Text(
                             '$count',
                             style: const TextStyle(
@@ -164,7 +177,8 @@ class _HomePageState extends State<HomePage> {
                   ),
                   contentPadding: const EdgeInsets.symmetric(vertical: 12),
                 ),
-                onChanged: (query) => context.read<SearchViewModel>().search(query),
+                onChanged: (query) =>
+                    context.read<SearchViewModel>().search(query),
               ),
             ),
             Padding(
@@ -181,7 +195,10 @@ class _HomePageState extends State<HomePage> {
                   ),
                   const Spacer(),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 4,
+                    ),
                     decoration: BoxDecoration(
                       color: Colors.red.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(99),
@@ -215,13 +232,17 @@ class _HomePageState extends State<HomePage> {
                           Icon(
                             Icons.search_off,
                             size: 56,
-                            color: theme.colorScheme.onSurface.withValues(alpha: 0.3),
+                            color: theme.colorScheme.onSurface.withValues(
+                              alpha: 0.3,
+                            ),
                           ),
                           const SizedBox(height: 12),
                           Text(
                             'Aucun film trouvé',
                             style: TextStyle(
-                              color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
+                              color: theme.colorScheme.onSurface.withValues(
+                                alpha: 0.5,
+                              ),
                               fontSize: 16,
                             ),
                           ),
@@ -231,7 +252,10 @@ class _HomePageState extends State<HomePage> {
                   }
                   if (searchState is SearchError) {
                     return Center(
-                      child: Text(searchState.message, style: const TextStyle(color: Colors.red)),
+                      child: Text(
+                        searchState.message,
+                        style: const TextStyle(color: Colors.red),
+                      ),
                     );
                   }
 
@@ -242,7 +266,10 @@ class _HomePageState extends State<HomePage> {
                       }
                       if (state is MoviesError) {
                         return Center(
-                          child: Text(state.message, style: const TextStyle(color: Colors.red)),
+                          child: Text(
+                            state.message,
+                            style: const TextStyle(color: Colors.red),
+                          ),
                         );
                       }
                       if (state is MoviesLoaded || state is MoviesLoadingMore) {
@@ -256,14 +283,16 @@ class _HomePageState extends State<HomePage> {
                             SliverPadding(
                               padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
                               sliver: SliverGrid(
-                                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                                  crossAxisCount: 2,
-                                  childAspectRatio: 0.65,
-                                  crossAxisSpacing: 12,
-                                  mainAxisSpacing: 12,
-                                ),
+                                gridDelegate:
+                                    const SliverGridDelegateWithFixedCrossAxisCount(
+                                      crossAxisCount: 2,
+                                      childAspectRatio: 0.65,
+                                      crossAxisSpacing: 12,
+                                      mainAxisSpacing: 12,
+                                    ),
                                 delegate: SliverChildBuilderDelegate(
-                                  (context, index) => MovieCard(movie: movies[index]),
+                                  (context, index) =>
+                                      MovieCard(movie: movies[index]),
                                   childCount: movies.length,
                                 ),
                               ),
@@ -272,7 +301,9 @@ class _HomePageState extends State<HomePage> {
                               const SliverToBoxAdapter(
                                 child: Padding(
                                   padding: EdgeInsets.all(16),
-                                  child: Center(child: CircularProgressIndicator()),
+                                  child: Center(
+                                    child: CircularProgressIndicator(),
+                                  ),
                                 ),
                               ),
                           ],

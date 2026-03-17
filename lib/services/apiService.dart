@@ -1,6 +1,5 @@
 //Communication avec l'extérieur. ApiService parle à TMDB et Laravel via Dio. 
 import 'package:dio/dio.dart';
-import '../entities/account.dart';
 import '../entities/movie.dart';
 import '../models/account.dart';
 import '../models/errors.dart';
@@ -195,7 +194,7 @@ class ApiService {
     return res.data['is_favorite'];
   }
 
-  // ── HELPER ────────────────────────────────────────
+  // ── HELPER ──
 
   Exception _handleError(DioException e) {
     if (e.response?.data?['errors'] != null) {

@@ -3,7 +3,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rotten_tomatoes/entities/account.dart';
 import 'package:rotten_tomatoes/view_models/auth_view_model.dart';
 import 'package:rotten_tomatoes/ui/pages/login_page.dart';
-import 'package:rotten_tomatoes/entities/account.dart';
 
 class EditProfilePage extends StatefulWidget {
   final Account user;

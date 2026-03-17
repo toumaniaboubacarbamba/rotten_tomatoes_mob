@@ -1,4 +1,4 @@
-//Les objets métier purs.Pas de JSON, pas de logique, juste les données qui persistent
+//Les objets métier purs Pas de JSON, pas de logique, juste les données qui persistent
 import 'package:equatable/equatable.dart';
 
 class Movie extends Equatable {

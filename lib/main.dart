@@ -38,7 +38,7 @@ class MainApp extends StatelessWidget {
         ),
         BlocProvider(create: (_) => MoviesViewModel(movieManager)),
         BlocProvider(create: (_) => SearchViewModel(movieManager)),
-        BlocProvider(create: (_) => FavoritesViewModel(movieManager)..load()),
+        BlocProvider(create: (_) => FavoritesViewModel(movieManager)),
         BlocProvider(create: (_) => GenreViewModel(movieManager)..loadGenres()),
         BlocProvider(create: (_) => ThemeViewModel(storage)..load()),
       ],

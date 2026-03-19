@@ -1,5 +1,4 @@
 //  La logique métier MovieManager combine ApiService + StorageService  pour les films et favoris.
-import '../entities/account.dart';
 import 'package:rotten_tomatoes/services/apiService.dart';
 import 'package:rotten_tomatoes/services/storageService.dart';
 

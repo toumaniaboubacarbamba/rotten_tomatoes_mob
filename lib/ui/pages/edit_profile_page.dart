@@ -223,6 +223,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                     onPressed: state is AuthLoading
                         ? null
                         : () {
+                            // validation côté client avant d'envoyer à l'API
                             final nameRegex = RegExp(
                               r'^[a-zA-ZàâäéèêëîïôöùûüÿçÀÂÄÉÈÊËÎÏÔÖÙÛÜŸÇ\s]+$',
                             );
@@ -275,6 +276,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                                 );
                                 return;
                               }
+                              // Envoie l'action de modification du mot de passe au AuthViewModel  sans reconstruire le widget
                               context.read<AuthViewModel>().add(
                                 UpdatePasswordRequested(
                                   _currentPasswordController.text.trim(),
@@ -283,6 +285,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                               );
                               return;
                             }
+                            // Envoie l'action de modification du nom au AuthViewModel sans reconstruire le widget
                             context.read<AuthViewModel>().add(
                               UpdateProfileRequested(
                                 _nameController.text.trim(),

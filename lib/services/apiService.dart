@@ -1,9 +1,9 @@
-//Communication avec l'extérieur. ApiService parle à TMDB et Laravel via Dio. 
+// Service qui gère les appels API vers TMDB et laravel. C'est la seule classe qui connaît les détails de l'API, les autres classes (ViewModels, etc.) ne font que l'appeler.
 import 'package:dio/dio.dart';
 import '../entities/movie.dart';
-import '../models/account.dart';
+import '../models/userModel.dart';
 import '../models/errors.dart';
-import '../models/movie.dart';
+import '../models/movieModel.dart';
 
 class ApiService {
   static const _tmdbBase = 'https://api.themoviedb.org/3';

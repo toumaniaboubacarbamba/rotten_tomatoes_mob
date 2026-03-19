@@ -53,16 +53,16 @@ UI → ViewModel → Engine → Service → API/Storage
 | flutter_local_notifications | Notifications locales |
 
 ##  Lancer le projet
-```bash
+## git bash
 # Cloner le projet
-git clone <url>
+git clone git@github.com:toumaniaboubacarbamba/rotten_tomatoes_mob.git
 
 # Installer les dépendances
 flutter pub get
 
 # Lancer l'app
 flutter run
-```
+
 
 
 ##  Réalisé dans le cadre d'un stage Flutter

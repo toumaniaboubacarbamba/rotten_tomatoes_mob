@@ -3,8 +3,19 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rotten_tomatoes/view_models/favorites_view_model.dart';
 import 'package:rotten_tomatoes/ui/widgets/movie_card.dart';
 
-class FavoritesPage extends StatelessWidget {
+class FavoritesPage extends StatefulWidget {
   const FavoritesPage({super.key});
+
+  @override
+  State<FavoritesPage> createState() => _FavoritesPageState();
+}
+
+class _FavoritesPageState extends State<FavoritesPage> {
+   @override
+  void initState() {
+    super.initState();
+    context.read<FavoritesViewModel>().load();
+  }
 
   @override
   Widget build(BuildContext context) {

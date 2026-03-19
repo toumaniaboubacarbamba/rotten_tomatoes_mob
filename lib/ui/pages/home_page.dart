@@ -25,11 +25,12 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     _scrollController.addListener(_onScroll);
-    //
+    // charger les favoris et les films au lancement de la page
     context.read<FavoritesViewModel>().load();
     context.read<MoviesViewModel>().loadMovies();
   }
 
+  // dispose des controllers pour eviter les fuites de mémoire
   @override
   void dispose() {
     _scrollController.dispose();
@@ -37,6 +38,7 @@ class _HomePageState extends State<HomePage> {
     super.dispose();
   }
 
+  // fonction pour détecter le scroll et charger plus de films si on atteint la fin de la liste
   void _onScroll() {
     if (_scrollController.position.pixels >=
         _scrollController.position.maxScrollExtent - 200) {
@@ -77,6 +79,7 @@ class _HomePageState extends State<HomePage> {
             ],
           ),
           actions: [
+            // bouton pour accéder à la page des genres
             IconButton(
               icon: const Icon(Icons.category_outlined, color: Colors.white),
               onPressed: () => Navigator.push(
@@ -84,6 +87,7 @@ class _HomePageState extends State<HomePage> {
                 MaterialPageRoute(builder: (_) => const GenrePage()),
               ),
             ),
+            // bouton pour acceder à la page des favoris avec un compteur++
             BlocBuilder<FavoritesViewModel, FavoritesState>(
               builder: (context, favState) {
                 int count = favState is FavoritesLoaded
@@ -133,6 +137,7 @@ class _HomePageState extends State<HomePage> {
                 );
               },
             ),
+            //bouton pour accéder à la page profil
             IconButton(
               icon: const Icon(Icons.person_outlined, color: Colors.white),
               onPressed: () => Navigator.push(
@@ -215,6 +220,7 @@ class _HomePageState extends State<HomePage> {
                 ],
               ),
             ),
+            // partie qui affiche soit les résultats de la recherche soit les films populaires
             Expanded(
               child: BlocBuilder<SearchViewModel, SearchState>(
                 builder: (context, searchState) {
@@ -258,7 +264,7 @@ class _HomePageState extends State<HomePage> {
                       ),
                     );
                   }
-
+                  
                   return BlocBuilder<MoviesViewModel, MoviesState>(
                     builder: (context, state) {
                       if (state is MoviesLoading) {
@@ -276,7 +282,7 @@ class _HomePageState extends State<HomePage> {
                         final movies = state is MoviesLoaded
                             ? state.movies
                             : (state as MoviesLoadingMore).movies;
-
+                        //ici on utilise un CustomScrollView pour pouvoir afficher une grille de films avec un CircularProgressIndicator...
                         return CustomScrollView(
                           controller: _scrollController,
                           slivers: [
@@ -320,7 +326,7 @@ class _HomePageState extends State<HomePage> {
       ),
     );
   }
-
+  // fonction pour construire la grille de film
   Widget _buildGrid(BuildContext context, movies) {
     return GridView.builder(
       padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),

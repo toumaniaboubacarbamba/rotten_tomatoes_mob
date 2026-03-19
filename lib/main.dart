@@ -1,13 +1,13 @@
 // main.dart est le point d'entrée de l'application. Il initialise les services, les managers et les BLoCs, et configure le thème et la navigation de l'app.
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:rotten_tomatoes/core/services/notification_service.dart';
+import 'package:rotten_tomatoes/services/notification_service.dart';
 import 'package:rotten_tomatoes/utils/app_theme.dart';
 import 'engines/auth_manager.dart';
 import 'engines/movie_manager.dart';
 import 'services/apiService.dart';
 import 'services/storageService.dart';
-import 'ui/splash/splash_page.dart';
+import 'ui/pages/splash_page.dart';
 import 'view_models/auth_view_model.dart';
 import 'view_models/movies_view_model.dart';
 import 'view_models/search_view_model.dart';

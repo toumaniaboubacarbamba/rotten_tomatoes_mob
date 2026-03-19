@@ -1,6 +1,6 @@
 // FavoritesViewModel est le BLoC qui gère l'état des films favoris. Il utilise MovieManager pour la logique métier et expose des événements et états pour la UI.
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:rotten_tomatoes/core/services/notification_service.dart';
+import 'package:rotten_tomatoes/services/notification_service.dart';
 import '../engines/movie_manager.dart';
 import '../entities/movie.dart';
 

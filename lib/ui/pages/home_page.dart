@@ -8,7 +8,7 @@ import 'package:rotten_tomatoes/ui/pages/login_page.dart';
 import 'package:rotten_tomatoes/ui/pages/profil_page.dart';
 import 'package:rotten_tomatoes/ui/pages/favorites_page.dart';
 import 'package:rotten_tomatoes/ui/pages/genre_page.dart';
-import 'package:rotten_tomatoes/ui/widgets/movie_card.dart';
+import 'package:rotten_tomatoes/ui/widgets/movie_grid.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -25,12 +25,10 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     _scrollController.addListener(_onScroll);
-    // charger les favoris et les films au lancement de la page
     context.read<FavoritesViewModel>().load();
     context.read<MoviesViewModel>().loadMovies();
   }
 
-  // dispose des controllers pour eviter les fuites de mémoire
   @override
   void dispose() {
     _scrollController.dispose();
@@ -38,7 +36,6 @@ class _HomePageState extends State<HomePage> {
     super.dispose();
   }
 
-  // fonction pour détecter le scroll et charger plus de films si on atteint la fin de la liste
   void _onScroll() {
     if (_scrollController.position.pixels >=
         _scrollController.position.maxScrollExtent - 200) {
@@ -79,7 +76,6 @@ class _HomePageState extends State<HomePage> {
             ],
           ),
           actions: [
-            // bouton pour accéder à la page des genres
             IconButton(
               icon: const Icon(Icons.category_outlined, color: Colors.white),
               onPressed: () => Navigator.push(
@@ -87,7 +83,6 @@ class _HomePageState extends State<HomePage> {
                 MaterialPageRoute(builder: (_) => const GenrePage()),
               ),
             ),
-            // bouton pour acceder à la page des favoris avec un compteur++
             BlocBuilder<FavoritesViewModel, FavoritesState>(
               builder: (context, favState) {
                 int count = favState is FavoritesLoaded
@@ -137,7 +132,6 @@ class _HomePageState extends State<HomePage> {
                 );
               },
             ),
-            //bouton pour accéder à la page profil
             IconButton(
               icon: const Icon(Icons.person_outlined, color: Colors.white),
               onPressed: () => Navigator.push(
@@ -220,7 +214,6 @@ class _HomePageState extends State<HomePage> {
                 ],
               ),
             ),
-            // partie qui affiche soit les résultats de la recherche soit les films populaires
             Expanded(
               child: BlocBuilder<SearchViewModel, SearchState>(
                 builder: (context, searchState) {
@@ -228,7 +221,7 @@ class _HomePageState extends State<HomePage> {
                     return const Center(child: CircularProgressIndicator());
                   }
                   if (searchState is SearchLoaded) {
-                    return _buildGrid(context, searchState.movies);
+                    return MovieGrid(movies: searchState.movies);
                   }
                   if (searchState is SearchEmpty) {
                     return Center(
@@ -282,37 +275,11 @@ class _HomePageState extends State<HomePage> {
                         final movies = state is MoviesLoaded
                             ? state.movies
                             : (state as MoviesLoadingMore).movies;
-                        //ici on utilise un CustomScrollView pour pouvoir afficher une grille de films avec un CircularProgressIndicator...
-                        return CustomScrollView(
+                        
+                        return MovieGrid(
+                          movies: movies,
                           controller: _scrollController,
-                          slivers: [
-                            SliverPadding(
-                              padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
-                              sliver: SliverGrid(
-                                gridDelegate:
-                                    const SliverGridDelegateWithFixedCrossAxisCount(
-                                      crossAxisCount: 2,
-                                      childAspectRatio: 0.65,
-                                      crossAxisSpacing: 12,
-                                      mainAxisSpacing: 12,
-                                    ),
-                                delegate: SliverChildBuilderDelegate(
-                                  (context, index) =>
-                                      MovieCard(movie: movies[index]),
-                                  childCount: movies.length,
-                                ),
-                              ),
-                            ),
-                            if (state is MoviesLoadingMore)
-                              const SliverToBoxAdapter(
-                                child: Padding(
-                                  padding: EdgeInsets.all(16),
-                                  child: Center(
-                                    child: CircularProgressIndicator(),
-                                  ),
-                                ),
-                              ),
-                          ],
+                          isLoadingMore: state is MoviesLoadingMore,
                         );
                       }
                       return const SizedBox.shrink();
@@ -324,20 +291,6 @@ class _HomePageState extends State<HomePage> {
           ],
         ),
       ),
-    );
-  }
-  // fonction pour construire la grille de film
-  Widget _buildGrid(BuildContext context, movies) {
-    return GridView.builder(
-      padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 2,
-        childAspectRatio: 0.65,
-        crossAxisSpacing: 12,
-        mainAxisSpacing: 12,
-      ),
-      itemCount: movies.length,
-      itemBuilder: (context, index) => MovieCard(movie: movies[index]),
     );
   }
 }

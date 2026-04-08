@@ -3,6 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rotten_tomatoes/view_models/auth_view_model.dart';
 import 'package:rotten_tomatoes/ui/pages/register_page.dart';
 import 'package:rotten_tomatoes/ui/pages/home_page.dart';
+import 'package:rotten_tomatoes/ui/widgets/common/app_text_field.dart';
+import 'package:rotten_tomatoes/ui/widgets/common/app_button.dart';
+import 'package:rotten_tomatoes/utils/validators.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -14,7 +17,6 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
-  bool _obscurePassword = true;
 
   @override
   void dispose() {
@@ -129,105 +131,45 @@ class _LoginPageState extends State<LoginPage> {
                             ),
                           ),
                           const SizedBox(height: 24),
-                          TextField(
+                          AppTextField(
                             controller: _emailController,
+                            label: 'Email',
+                            prefixIcon: Icons.email_outlined,
                             keyboardType: TextInputType.emailAddress,
-                            decoration: InputDecoration(
-                              labelText: 'Email',
-                              prefixIcon: Icon(
-                                Icons.email_outlined,
-                                color: theme.colorScheme.onSurface.withValues(
-                                  alpha: 0.5,
-                                ),
-                              ),
-                            ),
                           ),
                           const SizedBox(height: 16),
-                          TextField(
+                          AppTextField(
                             controller: _passwordController,
-                            obscureText: _obscurePassword,
-                            decoration: InputDecoration(
-                              labelText: 'Mot de passe',
-                              prefixIcon: Icon(
-                                Icons.lock_outlined,
-                                color: theme.colorScheme.onSurface.withValues(
-                                  alpha: 0.5,
-                                ),
-                              ),
-                              suffixIcon: IconButton(
-                                icon: Icon(
-                                  _obscurePassword
-                                      ? Icons.visibility_off_outlined
-                                      : Icons.visibility_outlined,
-                                  color: theme.colorScheme.onSurface.withValues(
-                                    alpha: 0.5,
-                                  ),
-                                ),
-                                onPressed: () => setState(
-                                  () => _obscurePassword = !_obscurePassword,
-                                ),
-                              ),
-                            ),
+                            label: 'Mot de passe',
+                            prefixIcon: Icons.lock_outlined,
+                            isPassword: true,
                           ),
                           const SizedBox(height: 28),
                           BlocBuilder<AuthViewModel, AuthState>(
                             builder: (context, state) {
-                              return SizedBox(
-                                width: double.infinity,
-                                height: 52,
-                                child: ElevatedButton(
-                                  onPressed: state is AuthLoading
-                                      ? null
-                                      : () {
-                                          if (_emailController.text
-                                              .trim()
-                                              .isEmpty) {
-                                            _showError(
-                                              context,
-                                              'Email obligatoire !',
-                                            );
-                                            return;
-                                          }
-                                          final emailRegex = RegExp(
-                                            r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$',
-                                          );
-                                          if (!emailRegex.hasMatch(
-                                            _emailController.text.trim(),
-                                          )) {
-                                            _showError(
-                                              context,
-                                              'Email invalide !',
-                                            );
-                                            return;
-                                          }
-                                          if (_passwordController.text
-                                              .trim()
-                                              .isEmpty) {
-                                            _showError(
-                                              context,
-                                              'Mot de passe obligatoire !',
-                                            );
-                                            return;
-                                          }
-                                          context.read<AuthViewModel>().add(
-                                            LoginRequested(
-                                              _emailController.text.trim(),
-                                              _passwordController.text.trim(),
-                                            ),
-                                          );
-                                        },
-                                  child: state is AuthLoading
-                                      ? const CircularProgressIndicator(
-                                          color: Colors.white,
-                                        )
-                                      : const Text(
-                                          'Se connecter',
-                                          style: TextStyle(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                ),
+                              return AppButton(
+                                label: 'Se connecter',
+                                isLoading: state is AuthLoading,
+                                onPressed: () {
+                                  final email = _emailController.text.trim();
+                                  final password = _passwordController.text.trim();
+
+                                  final emailError = Validators.validateEmail(email);
+                                  if (emailError != null) {
+                                    _showError(context, emailError);
+                                    return;
+                                  }
+
+                                  final passwordError = Validators.validatePassword(password);
+                                  if (passwordError != null) {
+                                    _showError(context, passwordError);
+                                    return;
+                                  }
+
+                                  context.read<AuthViewModel>().add(
+                                    LoginRequested(email, password),
+                                  );
+                                },
                               );
                             },
                           ),

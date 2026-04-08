@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rotten_tomatoes/view_models/genre_view_model.dart';
-import 'package:rotten_tomatoes/ui/widgets/movie_card.dart';
+import 'package:rotten_tomatoes/ui/widgets/movie_grid.dart';
 
 class GenrePage extends StatefulWidget {
   const GenrePage({super.key});
@@ -74,15 +74,15 @@ class _GenrePageState extends State<GenrePage> {
                             color: isSelected
                                 ? Colors.red
                                 : isDark
-                                ? Colors.grey[900]
-                                : Colors.grey[200],
+                                    ? Colors.grey[900]
+                                    : Colors.grey[200],
                             borderRadius: BorderRadius.circular(99),
                             border: Border.all(
                               color: isSelected
                                   ? Colors.red
                                   : isDark
-                                  ? Colors.grey[800]!
-                                  : Colors.grey[300]!,
+                                      ? Colors.grey[800]!
+                                      : Colors.grey[300]!,
                             ),
                             boxShadow: isSelected
                                 ? [
@@ -116,62 +116,51 @@ class _GenrePageState extends State<GenrePage> {
                 const SizedBox(height: 8),
                 Expanded(
                   child: state.selectedGenre == null
-                      ? Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                Icons.movie_filter,
-                                color: theme.colorScheme.onSurface.withValues(
-                                  alpha: 0.2,
-                                ),
-                                size: 72,
-                              ),
-                              const SizedBox(height: 16),
-                              Text(
-                                'Sélectionne un genre',
-                                style: TextStyle(
-                                  color: theme.colorScheme.onSurface.withValues(
-                                    alpha: 0.4,
-                                  ),
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ),
-                              const SizedBox(height: 8),
-                              Text(
-                                'pour découvrir des films 🎬',
-                                style: TextStyle(
-                                  color: theme.colorScheme.onSurface.withValues(
-                                    alpha: 0.3,
-                                  ),
-                                  fontSize: 13,
-                                ),
-                              ),
-                            ],
-                          ),
-                        )
+                      ? _buildEmptyState(theme, 'Sélectionne un genre', 'pour découvrir des films 🎬')
                       : state.movies.isEmpty
-                      ? const Center(child: CircularProgressIndicator())
-                      : GridView.builder(
-                          padding: const EdgeInsets.fromLTRB(12, 4, 12, 12),
-                          gridDelegate:
-                              const SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount: 2,
-                                childAspectRatio: 0.65,
-                                crossAxisSpacing: 12,
-                                mainAxisSpacing: 12,
-                              ),
-                          itemCount: state.movies.length,
-                          itemBuilder: (context, index) =>
-                              MovieCard(movie: state.movies[index]),
-                        ),
+                          ? const Center(child: CircularProgressIndicator())
+                          : MovieGrid(
+                              movies: state.movies,
+                              padding: const EdgeInsets.fromLTRB(12, 4, 12, 12),
+                            ),
                 ),
               ],
             );
           }
           return const SizedBox.shrink();
         },
+      ),
+    );
+  }
+
+  Widget _buildEmptyState(ThemeData theme, String title, String subtitle) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            Icons.movie_filter,
+            color: theme.colorScheme.onSurface.withValues(alpha: 0.2),
+            size: 72,
+          ),
+          const SizedBox(height: 16),
+          Text(
+            title,
+            style: TextStyle(
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.4),
+              fontSize: 16,
+              fontWeight: FontWeight.w500,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            subtitle,
+            style: TextStyle(
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.3),
+              fontSize: 13,
+            ),
+          ),
+        ],
       ),
     );
   }

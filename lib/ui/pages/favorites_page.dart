@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rotten_tomatoes/view_models/favorites_view_model.dart';
-import 'package:rotten_tomatoes/ui/widgets/movie_card.dart';
+import 'package:rotten_tomatoes/ui/widgets/movie_grid.dart';
 
 class FavoritesPage extends StatefulWidget {
   const FavoritesPage({super.key});
@@ -11,7 +11,7 @@ class FavoritesPage extends StatefulWidget {
 }
 
 class _FavoritesPageState extends State<FavoritesPage> {
-   @override
+  @override
   void initState() {
     super.initState();
     context.read<FavoritesViewModel>().load();
@@ -38,7 +38,10 @@ class _FavoritesPageState extends State<FavoritesPage> {
           }
           if (state is FavoritesError) {
             return Center(
-              child: Text(state.message, style: const TextStyle(color: Colors.red)),
+              child: Text(
+                state.message,
+                style: const TextStyle(color: Colors.red),
+              ),
             );
           }
           if (state is FavoritesLoaded) {
@@ -72,7 +75,9 @@ class _FavoritesPageState extends State<FavoritesPage> {
                     Text(
                       "Appuie sur ❤️ sur un film pour l'ajouter",
                       style: TextStyle(
-                        color: theme.colorScheme.onSurface.withValues(alpha: 0.4),
+                        color: theme.colorScheme.onSurface.withValues(
+                          alpha: 0.4,
+                        ),
                         fontSize: 13,
                       ),
                     ),
@@ -95,17 +100,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
                   ),
                 ),
                 Expanded(
-                  child: GridView.builder(
-                    padding: const EdgeInsets.fromLTRB(12, 0, 12, 12),
-                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      childAspectRatio: 0.65,
-                      crossAxisSpacing: 12,
-                      mainAxisSpacing: 12,
-                    ),
-                    itemCount: state.movies.length,
-                    itemBuilder: (context, index) => MovieCard(movie: state.movies[index]),
-                  ),
+                  child: MovieGrid(movies: state.movies),
                 ),
               ],
             );

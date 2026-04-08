@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rotten_tomatoes/entities/movie.dart';
-import 'package:rotten_tomatoes/view_models/favorites_view_model.dart';
+import 'package:rotten_tomatoes/ui/widgets/favorite_button.dart';
 
 class MovieDetailPage extends StatelessWidget {
   final Movie movie;
@@ -73,45 +72,7 @@ class MovieDetailPage extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(width: 12),
-                      BlocBuilder<FavoritesViewModel, FavoritesState>(
-                        builder: (context, state) {
-                          final isFavorite =
-                              state is FavoritesLoaded &&
-                              state.movies.any((m) => m.id == movie.id);
-                          return GestureDetector(
-                            onTap: () => context
-                                .read<FavoritesViewModel>()
-                                .toggle(movie),
-                            child: Container(
-                              padding: const EdgeInsets.all(10),
-                              decoration: BoxDecoration(
-                                color: isFavorite
-                                    ? Colors.red.withValues(alpha: 0.15)
-                                    : theme.cardColor,
-                                borderRadius: BorderRadius.circular(12),
-                                border: Border.all(
-                                  color: isFavorite
-                                      ? Colors.red
-                                      : theme.colorScheme.onSurface.withValues(
-                                          alpha: 0.15,
-                                        ),
-                                ),
-                              ),
-                              child: Icon(
-                                isFavorite
-                                    ? Icons.favorite
-                                    : Icons.favorite_border,
-                                color: isFavorite
-                                    ? Colors.red
-                                    : theme.colorScheme.onSurface.withValues(
-                                        alpha: 0.5,
-                                      ),
-                                size: 22,
-                              ),
-                            ),
-                          );
-                        },
-                      ),
+                      FavoriteButton(movie: movie),
                     ],
                   ),
                   const SizedBox(height: 16),

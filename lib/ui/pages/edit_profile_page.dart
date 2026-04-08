@@ -3,6 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rotten_tomatoes/entities/account.dart';
 import 'package:rotten_tomatoes/view_models/auth_view_model.dart';
 import 'package:rotten_tomatoes/ui/pages/login_page.dart';
+import 'package:rotten_tomatoes/ui/widgets/common/app_text_field.dart';
+import 'package:rotten_tomatoes/ui/widgets/common/app_button.dart';
+import 'package:rotten_tomatoes/utils/validators.dart';
 
 class EditProfilePage extends StatefulWidget {
   final Account user;
@@ -33,45 +36,42 @@ class _EditProfilePageState extends State<EditProfilePage> {
     super.dispose();
   }
 
+  void _showError(BuildContext context, String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message), backgroundColor: Colors.red),
+    );
+  }
+
+  void _showSuccess(BuildContext context, String message) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(message), backgroundColor: Colors.green),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Scaffold(
       appBar: AppBar(title: const Text('Modifier le profil')),
       body: BlocConsumer<AuthViewModel, AuthState>(
         listener: (context, state) {
-          if (state is AuthError) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(state.message),
-                backgroundColor: Colors.red,
-              ),
-            );
-          }
+          if (state is AuthError) _showError(context, state.message);
+          
           if (state is Authenticated) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Profil mis à jour avec succès !'),
-                backgroundColor: Colors.green,
-              ),
-            );
+            _showSuccess(context, 'Profil mis à jour avec succès !');
             Navigator.pop(context);
           }
+          
           if (state is AuthSuccess) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('Mot de passe modifié ! Reconnecte-toi.'),
-                backgroundColor: Colors.green,
-              ),
-            );
+            _showSuccess(context, 'Mot de passe modifié ! Reconnecte-toi.');
             Future.delayed(const Duration(seconds: 5), () {
               if (!mounted) return;
-              if (context.mounted) {
-                context.read<AuthViewModel>().add(LogoutRequested());
-                Navigator.of(context).pushAndRemoveUntil(
-                  MaterialPageRoute(builder: (_) => const LoginPage()),
-                  (route) => false,
-                );
-              }
+              context.read<AuthViewModel>().add(LogoutRequested());
+              Navigator.of(context).pushAndRemoveUntil(
+                MaterialPageRoute(builder: (_) => const LoginPage()),
+                (route) => false,
+              );
             });
           }
         },
@@ -84,224 +84,109 @@ class _EditProfilePageState extends State<EditProfilePage> {
                 Text(
                   'Informations personnelles',
                   style: TextStyle(
-                    color: Theme.of(context).colorScheme.onSurface,
+                    color: theme.colorScheme.onSurface,
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
                 const SizedBox(height: 16),
-                TextField(
+                AppTextField(
                   controller: _nameController,
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.onSurface,
-                  ),
-                  decoration: InputDecoration(
-                    labelText: 'Nom complet',
-                    labelStyle: TextStyle(color: Colors.grey[400]),
-                    prefixIcon: const Icon(Icons.person, color: Colors.grey),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide(color: Colors.grey[800]!),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(color: Colors.red),
-                    ),
-                  ),
+                  label: 'Nom complet',
+                  prefixIcon: Icons.person_outline,
                 ),
                 const SizedBox(height: 16),
-                TextField(
+                AppTextField(
+                  label: 'Email (non modifiable)',
+                  hintText: widget.user.email,
+                  prefixIcon: Icons.email_outlined,
                   enabled: false,
-                  style: TextStyle(color: Colors.grey[600]),
-                  decoration: InputDecoration(
-                    labelText: 'Email (non modifiable)',
-                    labelStyle: TextStyle(color: Colors.grey[600]),
-                    hintText: widget.user.email,
-                    hintStyle: TextStyle(color: Colors.grey[600]),
-                    prefixIcon: Icon(Icons.email, color: Colors.grey[700]),
-                    disabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide(color: Colors.grey[850]!),
-                    ),
-                  ),
                 ),
                 const SizedBox(height: 40),
-                const Divider(color: Colors.grey),
+                Divider(color: theme.colorScheme.onSurface.withValues(alpha: 0.1)),
                 const SizedBox(height: 24),
                 Text(
                   'Modifier le mot de passe',
                   style: TextStyle(
-                    color: Theme.of(context).colorScheme.onSurface,
+                    color: theme.colorScheme.onSurface,
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                const Text(
+                Text(
                   'Laisse vide si tu ne veux pas changer',
-                  style: TextStyle(color: Colors.grey, fontSize: 12),
+                  style: TextStyle(
+                    color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
+                    fontSize: 12,
+                  ),
                 ),
                 const SizedBox(height: 16),
-                TextField(
+                AppTextField(
                   controller: _currentPasswordController,
-                  obscureText: true,
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.onSurface,
-                  ),
-                  decoration: InputDecoration(
-                    labelText: 'Mot de passe actuel',
-                    labelStyle: TextStyle(color: Colors.grey[400]),
-                    prefixIcon: const Icon(Icons.lock, color: Colors.grey),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide(color: Colors.grey[800]!),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(color: Colors.red),
-                    ),
-                  ),
+                  label: 'Mot de passe actuel',
+                  prefixIcon: Icons.lock_outline,
+                  isPassword: true,
                 ),
                 const SizedBox(height: 16),
-                TextField(
+                AppTextField(
                   controller: _newPasswordController,
-                  obscureText: true,
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.onSurface,
-                  ),
-                  decoration: InputDecoration(
-                    labelText: 'Nouveau mot de passe',
-                    labelStyle: TextStyle(color: Colors.grey[400]),
-                    prefixIcon: const Icon(
-                      Icons.lock_outline,
-                      color: Colors.grey,
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide(color: Colors.grey[800]!),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(color: Colors.red),
-                    ),
-                  ),
+                  label: 'Nouveau mot de passe',
+                  prefixIcon: Icons.lock_outline,
+                  isPassword: true,
                 ),
                 const SizedBox(height: 16),
-                TextField(
+                AppTextField(
                   controller: _confirmPasswordController,
-                  obscureText: true,
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.onSurface,
-                  ),
-                  decoration: InputDecoration(
-                    labelText: 'Confirmer le nouveau mot de passe',
-                    labelStyle: TextStyle(color: Colors.grey[400]),
-                    prefixIcon: const Icon(
-                      Icons.lock_outline,
-                      color: Colors.grey,
-                    ),
-                    enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide(color: Colors.grey[800]!),
-                    ),
-                    focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(color: Colors.red),
-                    ),
-                  ),
+                  label: 'Confirmer le nouveau mot de passe',
+                  prefixIcon: Icons.lock_outline,
+                  isPassword: true,
                 ),
                 const SizedBox(height: 48),
-                SizedBox(
-                  width: double.infinity,
-                  height: 52,
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.red,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                    onPressed: state is AuthLoading
-                        ? null
-                        : () {
-                            // validation côté client avant d'envoyer à l'API
-                            final nameRegex = RegExp(
-                              r'^[a-zA-ZàâäéèêëîïôöùûüÿçÀÂÄÉÈÊËÎÏÔÖÙÛÜŸÇ\s]+$',
-                            );
-                            if (_nameController.text.trim().isEmpty ||
-                                !nameRegex.hasMatch(
-                                  _nameController.text.trim(),
-                                )) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text('Nom invalide !'),
-                                  backgroundColor: Colors.red,
-                                ),
-                              );
-                              return;
-                            }
-                            if (_newPasswordController.text.isNotEmpty ||
-                                _currentPasswordController.text.isNotEmpty) {
-                              if (_currentPasswordController.text
-                                  .trim()
-                                  .isEmpty) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text(
-                                      'Le mot de passe actuel est obligatoire !',
-                                    ),
-                                    backgroundColor: Colors.red,
-                                  ),
-                                );
-                                return;
-                              }
-                              if (_newPasswordController.text.trim().length <
-                                  6) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text('Minimum 6 caractères !'),
-                                    backgroundColor: Colors.red,
-                                  ),
-                                );
-                                return;
-                              }
-                              if (_newPasswordController.text !=
-                                  _confirmPasswordController.text) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text(
-                                      'Les mots de passe ne correspondent pas !',
-                                    ),
-                                    backgroundColor: Colors.red,
-                                  ),
-                                );
-                                return;
-                              }
-                              // Envoie l'action de modification du mot de passe au AuthViewModel  sans reconstruire le widget
-                              context.read<AuthViewModel>().add(
-                                UpdatePasswordRequested(
-                                  _currentPasswordController.text.trim(),
-                                  _newPasswordController.text.trim(),
-                                ),
-                              );
-                              return;
-                            }
-                            // Envoie l'action de modification du nom au AuthViewModel sans reconstruire le widget
-                            context.read<AuthViewModel>().add(
-                              UpdateProfileRequested(
-                                _nameController.text.trim(),
-                              ),
-                            );
-                          },
-                    child: state is AuthLoading
-                        ? const CircularProgressIndicator(color: Colors.white)
-                        : const Text(
-                            'Enregistrer les modifications',
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                  ),
+                AppButton(
+                  label: 'Enregistrer les modifications',
+                  isLoading: state is AuthLoading,
+                  onPressed: () {
+                    final name = _nameController.text.trim();
+                    final currentPass = _currentPasswordController.text.trim();
+                    final newPass = _newPasswordController.text.trim();
+                    final confirmPass = _confirmPasswordController.text.trim();
+
+                    // Validation du nom
+                    final nameError = Validators.validateName(name);
+                    if (nameError != null) {
+                      _showError(context, nameError);
+                      return;
+                    }
+
+                    // Si on essaie de changer le mot de passe
+                    if (newPass.isNotEmpty || currentPass.isNotEmpty) {
+                      if (currentPass.isEmpty) {
+                        _showError(context, 'Le mot de passe actuel est obligatoire !');
+                        return;
+                      }
+                      
+                      final passError = Validators.validatePassword(newPass);
+                      if (passError != null) {
+                        _showError(context, 'Nouveau mot de passe : $passError');
+                        return;
+                      }
+
+                      if (newPass != confirmPass) {
+                        _showError(context, 'Les mots de passe ne correspondent pas !');
+                        return;
+                      }
+
+                      context.read<AuthViewModel>().add(
+                        UpdatePasswordRequested(currentPass, newPass),
+                      );
+                      return;
+                    }
+
+                    // Sinon, mise à jour du profil uniquement
+                    context.read<AuthViewModel>().add(
+                      UpdateProfileRequested(name),
+                    );
+                  },
                 ),
               ],
             ),

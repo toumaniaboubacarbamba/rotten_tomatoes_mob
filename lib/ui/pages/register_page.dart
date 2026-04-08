@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rotten_tomatoes/view_models/auth_view_model.dart';
 import 'package:rotten_tomatoes/ui/pages/home_page.dart';
+import 'package:rotten_tomatoes/ui/widgets/common/app_text_field.dart';
+import 'package:rotten_tomatoes/ui/widgets/common/app_button.dart';
+import 'package:rotten_tomatoes/utils/validators.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -15,8 +18,6 @@ class _RegisterPageState extends State<RegisterPage> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _passwordConfirmController = TextEditingController();
-  bool _obscurePassword = true;
-  bool _obscureConfirm = true;
 
   @override
   void dispose() {
@@ -70,7 +71,8 @@ class _RegisterPageState extends State<RegisterPage> {
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            const Icon(Icons.person_add, color: Colors.white, size: 48),
+                            const Icon(Icons.person_add,
+                                color: Colors.white, size: 48),
                             const SizedBox(height: 12),
                             const Text(
                               'Créer un compte',
@@ -109,128 +111,78 @@ class _RegisterPageState extends State<RegisterPage> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          TextField(
+                          AppTextField(
                             controller: _nameController,
-                            decoration: InputDecoration(
-                              labelText: 'Nom complet',
-                              prefixIcon: Icon(
-                                Icons.person_outline,
-                                color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
-                              ),
-                            ),
+                            label: 'Nom complet',
+                            prefixIcon: Icons.person_outline,
                           ),
                           const SizedBox(height: 16),
-                          TextField(
+                          AppTextField(
                             controller: _emailController,
+                            label: 'Email',
+                            prefixIcon: Icons.email_outlined,
                             keyboardType: TextInputType.emailAddress,
-                            decoration: InputDecoration(
-                              labelText: 'Email',
-                              prefixIcon: Icon(
-                                Icons.email_outlined,
-                                color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
-                              ),
-                            ),
                           ),
                           const SizedBox(height: 16),
-                          TextField(
+                          AppTextField(
                             controller: _passwordController,
-                            obscureText: _obscurePassword,
-                            decoration: InputDecoration(
-                              labelText: 'Mot de passe',
-                              prefixIcon: Icon(
-                                Icons.lock_outlined,
-                                color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
-                              ),
-                              suffixIcon: IconButton(
-                                icon: Icon(
-                                  _obscurePassword
-                                      ? Icons.visibility_off_outlined
-                                      : Icons.visibility_outlined,
-                                  color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
-                                ),
-                                onPressed: () => setState(
-                                  () => _obscurePassword = !_obscurePassword,
-                                ),
-                              ),
-                            ),
+                            label: 'Mot de passe',
+                            prefixIcon: Icons.lock_outlined,
+                            isPassword: true,
                           ),
                           const SizedBox(height: 16),
-                          TextField(
+                          AppTextField(
                             controller: _passwordConfirmController,
-                            obscureText: _obscureConfirm,
-                            decoration: InputDecoration(
-                              labelText: 'Confirmer le mot de passe',
-                              prefixIcon: Icon(
-                                Icons.lock_outlined,
-                                color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
-                              ),
-                              suffixIcon: IconButton(
-                                icon: Icon(
-                                  _obscureConfirm
-                                      ? Icons.visibility_off_outlined
-                                      : Icons.visibility_outlined,
-                                  color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
-                                ),
-                                onPressed: () => setState(
-                                  () => _obscureConfirm = !_obscureConfirm,
-                                ),
-                              ),
-                            ),
+                            label: 'Confirmer le mot de passe',
+                            prefixIcon: Icons.lock_outlined,
+                            isPassword: true,
                           ),
                           const SizedBox(height: 28),
                           BlocBuilder<AuthViewModel, AuthState>(
                             builder: (context, state) {
-                              return SizedBox(
-                                width: double.infinity,
-                                height: 52,
-                                child: ElevatedButton(
-                                  onPressed: state is AuthLoading
-                                      ? null
-                                      : () {
-                                          final nameRegex = RegExp(
-                                            r'^[a-zA-ZàâäéèêëîïôöùûüÿçÀÂÄÉÈÊËÎÏÔÖÙÛÜŸÇ\s]+$',
-                                          );
-                                          if (_nameController.text.trim().isEmpty) {
-                                            _showError(context, 'Nom obligatoire !');
-                                            return;
-                                          }
-                                          if (!nameRegex.hasMatch(_nameController.text.trim())) {
-                                            _showError(context, 'Lettres uniquement !');
-                                            return;
-                                          }
-                                          final emailRegex = RegExp(
-                                            r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$',
-                                          );
-                                          if (!emailRegex.hasMatch(_emailController.text.trim())) {
-                                            _showError(context, 'Email invalide !');
-                                            return;
-                                          }
-                                          if (_passwordController.text.trim().length < 6) {
-                                            _showError(context, 'Minimum 6 caractères !');
-                                            return;
-                                          }
-                                          if (_passwordController.text != _passwordConfirmController.text) {
-                                            _showError(context, 'Mots de passe différents !');
-                                            return;
-                                          }
-                                          context.read<AuthViewModel>().add(
-                                            RegisterRequested(
-                                              _nameController.text.trim(),
-                                              _emailController.text.trim(),
-                                              _passwordController.text.trim(),
-                                            ),
-                                          );
-                                        },
-                                  child: state is AuthLoading
-                                      ? const CircularProgressIndicator(color: Colors.white)
-                                      : const Text(
-                                          "S'inscrire",
-                                          style: TextStyle(
-                                            fontSize: 16,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                ),
+                              return AppButton(
+                                label: "S'inscrire",
+                                isLoading: state is AuthLoading,
+                                onPressed: () {
+                                  final name = _nameController.text.trim();
+                                  final email = _emailController.text.trim();
+                                  final password =
+                                      _passwordController.text.trim();
+                                  final confirm =
+                                      _passwordConfirmController.text.trim();
+
+                                  final nameError =
+                                      Validators.validateName(name);
+                                  if (nameError != null) {
+                                    _showError(context, nameError);
+                                    return;
+                                  }
+
+                                  final emailError =
+                                      Validators.validateEmail(email);
+                                  if (emailError != null) {
+                                    _showError(context, emailError);
+                                    return;
+                                  }
+
+                                  final passwordError =
+                                      Validators.validatePassword(password);
+                                  if (passwordError != null) {
+                                    _showError(context, passwordError);
+                                    return;
+                                  }
+
+                                  if (password != confirm) {
+                                    _showError(
+                                        context, 'Mots de passe différents !');
+                                    return;
+                                  }
+
+                                  context.read<AuthViewModel>().add(
+                                        RegisterRequested(
+                                            name, email, password),
+                                      );
+                                },
                               );
                             },
                           ),
@@ -242,7 +194,8 @@ class _RegisterPageState extends State<RegisterPage> {
                                 text: TextSpan(
                                   text: "Déjà un compte ? ",
                                   style: TextStyle(
-                                    color: theme.colorScheme.onSurface.withValues(alpha: 0.5),
+                                    color: theme.colorScheme.onSurface
+                                        .withValues(alpha: 0.5),
                                     fontSize: 13,
                                   ),
                                   children: const [

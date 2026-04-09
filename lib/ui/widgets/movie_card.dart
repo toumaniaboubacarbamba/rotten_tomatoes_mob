@@ -5,10 +5,14 @@ import 'package:rotten_tomatoes/ui/widgets/favorite_button.dart';
 
 class MovieCard extends StatelessWidget {
   final Movie movie;
+  final bool isFavorite;
+  final VoidCallback onToggleFavorite;
 
   const MovieCard({
     super.key,
     required this.movie,
+    required this.isFavorite,
+    required this.onToggleFavorite,
   });
 
   @override
@@ -143,7 +147,10 @@ class MovieCard extends StatelessWidget {
                               ],
                             ),
                           ),
-                          FavoriteButton(movie: movie),
+                          FavoriteButton(
+                            isFavorite: isFavorite,
+                            onToggle: onToggleFavorite,
+                          ),
                         ],
                       ),
                     ],

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rotten_tomatoes/entities/movie.dart';
 import 'package:rotten_tomatoes/ui/widgets/movie_card.dart';
+import 'package:rotten_tomatoes/view_models/favorites_view_model.dart';
 
 class MovieGrid extends StatelessWidget {
   final List<Movie> movies;
@@ -37,7 +39,30 @@ class MovieGrid extends StatelessWidget {
               mainAxisSpacing: 12,
             ),
             delegate: SliverChildBuilderDelegate(
-              (context, index) => MovieCard(movie: movies[index]),
+              (context, index) {
+                final movie = movies[index];
+                
+                // C'est ici que le parent (la grille) "pilote" l'enfant
+                return BlocBuilder<FavoritesViewModel, FavoritesState>(
+                  // Optimisation : on ne reconstruit QUE si CE film change
+                  buildWhen: (previous, current) {
+                    if (previous is! FavoritesLoaded || current is! FavoritesLoaded) return true;
+                    final wasFav = previous.movies.any((m) => m.id == movie.id);
+                    final isFav = current.movies.any((m) => m.id == movie.id);
+                    return wasFav != isFav;
+                  },
+                  builder: (context, state) {
+                    final isFavorite = state is FavoritesLoaded && 
+                        state.movies.any((m) => m.id == movie.id);
+                        
+                    return MovieCard(
+                      movie: movie,
+                      isFavorite: isFavorite,
+                      onToggleFavorite: () => context.read<FavoritesViewModel>().toggle(movie),
+                    );
+                  },
+                );
+              },
               childCount: movies.length,
             ),
           ),

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rotten_tomatoes/entities/movie.dart';
 import 'package:rotten_tomatoes/ui/widgets/favorite_button.dart';
+import 'package:rotten_tomatoes/view_models/favorites_view_model.dart';
 
 class MovieDetailPage extends StatelessWidget {
   final Movie movie;
@@ -72,7 +74,23 @@ class MovieDetailPage extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(width: 12),
-                      FavoriteButton(movie: movie),
+                      // C'est ici que la page "pilote" le bouton
+                      BlocBuilder<FavoritesViewModel, FavoritesState>(
+                        builder: (context, state) {
+                          final isFavorite = state is FavoritesLoaded &&
+                              state.movies.any((m) => m.id == movie.id);
+                          return FavoriteButton(
+                            isFavorite: isFavorite,
+                            onToggle: () => context
+                                .read<FavoritesViewModel>()
+                                .toggle(movie),
+                            size: 22,
+                            backgroundColor: isFavorite
+                                ? Colors.red.withValues(alpha: 0.15)
+                                : theme.cardColor,
+                          );
+                        },
+                      ),
                     ],
                   ),
                   const SizedBox(height: 16),

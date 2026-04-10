@@ -1,18 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:rotten_tomatoes/entities/movie.dart';
-import 'package:rotten_tomatoes/ui/pages/movie_detail_page.dart';
 import 'package:rotten_tomatoes/ui/widgets/favorite_button.dart';
 
 class MovieCard extends StatelessWidget {
   final Movie movie;
   final bool isFavorite;
   final VoidCallback onToggleFavorite;
+  final VoidCallback onTap;
 
   const MovieCard({
     super.key,
     required this.movie,
     required this.isFavorite,
     required this.onToggleFavorite,
+    required this.onTap,
   });
 
   @override
@@ -20,10 +21,7 @@ class MovieCard extends StatelessWidget {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
     return GestureDetector(
-      onTap: () => Navigator.push(
-        context,
-        MaterialPageRoute(builder: (_) => MovieDetailPage(movie: movie)),
-      ),
+      onTap: onTap,
       child: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16),

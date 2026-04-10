@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:rotten_tomatoes/entities/movie.dart';
 import 'package:rotten_tomatoes/view_models/auth_view_model.dart';
 import 'package:rotten_tomatoes/view_models/favorites_view_model.dart';
 import 'package:rotten_tomatoes/view_models/movies_view_model.dart';
@@ -8,7 +9,9 @@ import 'package:rotten_tomatoes/ui/pages/login_page.dart';
 import 'package:rotten_tomatoes/ui/pages/profil_page.dart';
 import 'package:rotten_tomatoes/ui/pages/favorites_page.dart';
 import 'package:rotten_tomatoes/ui/pages/genre_page.dart';
+import 'package:rotten_tomatoes/ui/pages/movie_detail_page.dart';
 import 'package:rotten_tomatoes/ui/widgets/movie_grid.dart';
+import 'package:rotten_tomatoes/ui/widgets/movie_card.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -41,6 +44,13 @@ class _HomePageState extends State<HomePage> {
         _scrollController.position.maxScrollExtent - 200) {
       context.read<MoviesViewModel>().loadMoreMovies();
     }
+  }
+
+  void _onMovieTap(Movie movie) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => MovieDetailPage(movie: movie)),
+    );
   }
 
   @override
@@ -221,7 +231,10 @@ class _HomePageState extends State<HomePage> {
                     return const Center(child: CircularProgressIndicator());
                   }
                   if (searchState is SearchLoaded) {
-                    return MovieGrid(movies: searchState.movies);
+                    return MovieGrid(
+                      movies: searchState.movies,
+                      itemBuilder: _buildMovieCard,
+                    );
                   }
                   if (searchState is SearchEmpty) {
                     return Center(
@@ -280,6 +293,7 @@ class _HomePageState extends State<HomePage> {
                           movies: movies,
                           controller: _scrollController,
                           isLoadingMore: state is MoviesLoadingMore,
+                          itemBuilder: _buildMovieCard,
                         );
                       }
                       return const SizedBox.shrink();
@@ -291,6 +305,28 @@ class _HomePageState extends State<HomePage> {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildMovieCard(BuildContext context, Movie movie) {
+    return BlocBuilder<FavoritesViewModel, FavoritesState>(
+      buildWhen: (previous, current) {
+        if (previous is! FavoritesLoaded || current is! FavoritesLoaded) return true;
+        final wasFav = previous.movies.any((m) => m.id == movie.id);
+        final isFav = current.movies.any((m) => m.id == movie.id);
+        return wasFav != isFav;
+      },
+      builder: (context, state) {
+        final isFavorite = state is FavoritesLoaded && 
+            state.movies.any((m) => m.id == movie.id);
+            
+        return MovieCard(
+          movie: movie,
+          isFavorite: isFavorite,
+          onToggleFavorite: () => context.read<FavoritesViewModel>().toggle(movie),
+          onTap: () => _onMovieTap(movie),
+        );
+      },
     );
   }
 }

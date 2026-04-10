@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:rotten_tomatoes/entities/movie.dart';
 import 'package:rotten_tomatoes/view_models/genre_view_model.dart';
+import 'package:rotten_tomatoes/view_models/favorites_view_model.dart';
 import 'package:rotten_tomatoes/ui/widgets/movie_grid.dart';
+import 'package:rotten_tomatoes/ui/widgets/movie_card.dart';
+import 'package:rotten_tomatoes/ui/pages/movie_detail_page.dart';
 
 class GenrePage extends StatefulWidget {
   const GenrePage({super.key});
@@ -15,6 +19,13 @@ class _GenrePageState extends State<GenrePage> {
   void initState() {
     super.initState();
     context.read<GenreViewModel>().loadGenres();
+  }
+
+  void _onMovieTap(Movie movie) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => MovieDetailPage(movie: movie)),
+    );
   }
 
   @override
@@ -116,12 +127,43 @@ class _GenrePageState extends State<GenrePage> {
                 const SizedBox(height: 8),
                 Expanded(
                   child: state.selectedGenre == null
-                      ? _buildEmptyState(theme, 'Sélectionne un genre', 'pour découvrir des films 🎬')
+                      ? _buildEmptyState(theme, 'Sélectionne un genre',
+                          'pour découvrir des films 🎬')
                       : state.movies.isEmpty
                           ? const Center(child: CircularProgressIndicator())
                           : MovieGrid(
                               movies: state.movies,
                               padding: const EdgeInsets.fromLTRB(12, 4, 12, 12),
+                              itemBuilder: (context, movie) {
+                                return BlocBuilder<FavoritesViewModel,
+                                    FavoritesState>(
+                                  buildWhen: (previous, current) {
+                                    if (previous is! FavoritesLoaded ||
+                                        current is! FavoritesLoaded) {
+                                      return true;
+                                    }
+                                    final wasFav = previous.movies
+                                        .any((m) => m.id == movie.id);
+                                    final isFav = current.movies
+                                        .any((m) => m.id == movie.id);
+                                    return wasFav != isFav;
+                                  },
+                                  builder: (context, favState) {
+                                    final isFavorite = favState
+                                            is FavoritesLoaded &&
+                                        favState.movies
+                                            .any((m) => m.id == movie.id);
+                                    return MovieCard(
+                                      movie: movie,
+                                      isFavorite: isFavorite,
+                                      onToggleFavorite: () => context
+                                          .read<FavoritesViewModel>()
+                                          .toggle(movie),
+                                      onTap: () => _onMovieTap(movie),
+                                    );
+                                  },
+                                );
+                              },
                             ),
                 ),
               ],

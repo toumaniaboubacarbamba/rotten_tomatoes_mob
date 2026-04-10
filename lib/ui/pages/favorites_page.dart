@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:rotten_tomatoes/entities/movie.dart';
 import 'package:rotten_tomatoes/view_models/favorites_view_model.dart';
 import 'package:rotten_tomatoes/ui/widgets/movie_grid.dart';
+import 'package:rotten_tomatoes/ui/widgets/movie_card.dart';
+import 'package:rotten_tomatoes/ui/pages/movie_detail_page.dart';
 
 class FavoritesPage extends StatefulWidget {
   const FavoritesPage({super.key});
@@ -15,6 +18,13 @@ class _FavoritesPageState extends State<FavoritesPage> {
   void initState() {
     super.initState();
     context.read<FavoritesViewModel>().load();
+  }
+
+  void _onMovieTap(Movie movie) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => MovieDetailPage(movie: movie)),
+    );
   }
 
   @override
@@ -100,7 +110,18 @@ class _FavoritesPageState extends State<FavoritesPage> {
                   ),
                 ),
                 Expanded(
-                  child: MovieGrid(movies: state.movies),
+                  child: MovieGrid(
+                    movies: state.movies,
+                    itemBuilder: (context, movie) {
+                      return MovieCard(
+                        movie: movie,
+                        isFavorite: true,
+                        onToggleFavorite: () =>
+                            context.read<FavoritesViewModel>().toggle(movie),
+                        onTap: () => _onMovieTap(movie),
+                      );
+                    },
+                  ),
                 ),
               ],
             );

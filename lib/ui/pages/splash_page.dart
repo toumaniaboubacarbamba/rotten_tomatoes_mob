@@ -48,7 +48,7 @@ class _SplashPageState extends State<SplashPage>
           Future.delayed(const Duration(milliseconds: 1500), () {
             if (!mounted) return;
             if (state is Authenticated) {
-              context.read<MoviesViewModel>().loadMovies();
+              context.read<MoviesViewModel>().add(LoadMovies());
               Navigator.of(context).pushReplacement(
                 MaterialPageRoute(builder: (_) => const HomePage()),
               );

@@ -1,20 +1,37 @@
-// ThemeViewModel est le BLoC qui gère l'état du thème (clair/sombre). Il utilise StorageService pour la logique métier de sauvegarde et récupération du thème, et expose des événements et états pour la UI.
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../services/storageService.dart';
 
-class ThemeViewModel extends Cubit<bool> {
+// --- Événements ---
+abstract class ThemeEvent {}
+
+class LoadTheme extends ThemeEvent {}
+
+class ToggleTheme extends ThemeEvent {}
+
+// --- État ---
+class ThemeState {
+  final bool isDark;
+  ThemeState(this.isDark);
+}
+
+// --- BLoC ---
+class ThemeViewModel extends Bloc<ThemeEvent, ThemeState> {
   final StorageService _storage;
 
-  ThemeViewModel(this._storage) : super(true);
-
-  Future<void> load() async {
-    final isDark = await _storage.getTheme();
-    emit(isDark);
+  ThemeViewModel(this._storage) : super(ThemeState(true)) {
+    // Enregistrement des handlers d'événements
+    on<LoadTheme>(_onLoadTheme);
+    on<ToggleTheme>(_onToggleTheme);
   }
 
-  Future<void> toggleTheme() async {
-    final newValue = !state;
+  Future<void> _onLoadTheme(LoadTheme event, Emitter<ThemeState> emit) async {
+    final isDark = await _storage.getTheme();
+    emit(ThemeState(isDark));
+  }
+
+  Future<void> _onToggleTheme(ToggleTheme event, Emitter<ThemeState> emit) async {
+    final newValue = !state.isDark;
     await _storage.saveTheme(newValue);
-    emit(newValue);
+    emit(ThemeState(newValue));
   }
 }

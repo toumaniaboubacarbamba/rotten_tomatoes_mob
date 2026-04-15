@@ -1,16 +1,26 @@
-// MoviesViewModel est le BLoC qui gère l'état de la liste des films populaires. Il utilise MovieManager pour la logique métier et expose des événements et états pour la UI.
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../engines/movie_manager.dart';
 import '../entities/movie.dart';
 
-// ── STATES ────────────────────────────────────────
+// ── EVENTS ──
+abstract class MoviesEvent {}
+
+class LoadMovies extends MoviesEvent {}
+
+class LoadMoreMovies extends MoviesEvent {}
+
+// ── STATES ──
 abstract class MoviesState {}
+
 class MoviesInitial extends MoviesState {}
+
 class MoviesLoading extends MoviesState {}
+
 class MoviesLoadingMore extends MoviesState {
   final List<Movie> movies;
   MoviesLoadingMore(this.movies);
 }
+
 class MoviesLoaded extends MoviesState {
   final List<Movie> movies;
   final int currentPage;
@@ -21,18 +31,23 @@ class MoviesLoaded extends MoviesState {
     this.hasReachedMax = false,
   });
 }
+
 class MoviesError extends MoviesState {
   final String message;
   MoviesError(this.message);
 }
 
-// ── CUBIT ─────────────────────────────────────────
-class MoviesViewModel extends Cubit<MoviesState> {
+// ── BLOC ──
+class MoviesViewModel extends Bloc<MoviesEvent, MoviesState> {
   final MovieManager _manager;
 
-  MoviesViewModel(this._manager) : super(MoviesInitial());
+  MoviesViewModel(this._manager) : super(MoviesInitial()) {
+    on<LoadMovies>(_onLoadMovies);
+    on<LoadMoreMovies>(_onLoadMoreMovies);
+  }
 
-  Future<void> loadMovies() async {
+  Future<void> _onLoadMovies(
+      LoadMovies event, Emitter<MoviesState> emit) async {
     emit(MoviesLoading());
     try {
       final movies = await _manager.getPopularMovies(page: 1);
@@ -42,7 +57,8 @@ class MoviesViewModel extends Cubit<MoviesState> {
     }
   }
 
-  Future<void> loadMoreMovies() async {
+  Future<void> _onLoadMoreMovies(
+      LoadMoreMovies event, Emitter<MoviesState> emit) async {
     if (state is! MoviesLoaded) return;
     final current = state as MoviesLoaded;
     if (current.hasReachedMax) return;

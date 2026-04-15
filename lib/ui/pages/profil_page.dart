@@ -278,8 +278,9 @@ class ProfilePage extends StatelessWidget {
                                 ),
                               ),
                               const ProfileDivider(),
-                              BlocBuilder<ThemeViewModel, bool>(
-                                builder: (context, isDarkMode) {
+                              BlocBuilder<ThemeViewModel, ThemeState>(
+                                builder: (context, state) {
+                                  final isDarkMode = state.isDark;
                                   return ProfileActionTile(
                                     icon: isDarkMode
                                         ? Icons.light_mode_outlined
@@ -294,7 +295,7 @@ class ProfilePage extends StatelessWidget {
                                       value: isDarkMode,
                                       onChanged: (_) => context
                                           .read<ThemeViewModel>()
-                                          .toggleTheme(),
+                                          .add(ToggleTheme()),
                                       activeColor: Colors.red,
                                     ),
                                     isLast: true,

@@ -1,4 +1,3 @@
-// main.dart est le point d'entrée de l'application. Il initialise les services, les managers et les BLoCs, et configure le thème et la navigation de l'app.
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rotten_tomatoes/services/notification_service.dart';
@@ -30,7 +29,7 @@ class MainApp extends StatelessWidget {
     final storage = StorageService();
     final authManager = AuthManager(api, storage);
     final movieManager = MovieManager(api, storage);
-    // MultiBlocProvider permet de fournir tous les BLoCs nécessaires à l'app dès le départ, pour que n'importe quelle page puisse y accéder facilement.
+    
     return MultiBlocProvider(
       providers: [
         BlocProvider(
@@ -39,18 +38,21 @@ class MainApp extends StatelessWidget {
         BlocProvider(create: (_) => MoviesViewModel(movieManager)),
         BlocProvider(create: (_) => SearchViewModel(movieManager)),
         BlocProvider(create: (_) => FavoritesViewModel(movieManager)),
-        BlocProvider(create: (_) => GenreViewModel(movieManager)..loadGenres()),
-        BlocProvider(create: (_) => ThemeViewModel(storage)..load()),
+        BlocProvider(
+          create: (_) => GenreViewModel(movieManager)..add(LoadGenres()),
+        ),
+        BlocProvider(
+          create: (_) => ThemeViewModel(storage)..add(LoadTheme()),
+        ),
       ],
-      // BlocBuilder écoute les changements de thème pour appliquer le thème clair/sombre à toute l'app.
-      child: BlocBuilder<ThemeViewModel, bool>(
-        builder: (context, isDark) {
+      child: BlocBuilder<ThemeViewModel, ThemeState>(
+        builder: (context, state) {
           return MaterialApp(
             debugShowCheckedModeBanner: false,
             title: 'Rotten Tomatoes',
             theme: AppTheme.light,
             darkTheme: AppTheme.dark,
-            themeMode: isDark ? ThemeMode.dark : ThemeMode.light,
+            themeMode: state.isDark ? ThemeMode.dark : ThemeMode.light,
             home: const SplashPage(),
           );
         },

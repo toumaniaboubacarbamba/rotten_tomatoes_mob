@@ -81,9 +81,7 @@ class MovieDetailPage extends StatelessWidget {
                               state.movies.any((m) => m.id == movie.id);
                           return FavoriteButton(
                             isFavorite: isFavorite,
-                            onToggle: () => context
-                                .read<FavoritesViewModel>()
-                                .toggle(movie),
+                            onToggle: () => context.read<FavoritesViewModel>().add(ToggleFavorite(movie)),
                             size: 22,
                             backgroundColor: isFavorite
                                 ? Colors.red.withValues(alpha: 0.15)

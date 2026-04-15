@@ -17,7 +17,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
   @override
   void initState() {
     super.initState();
-    context.read<FavoritesViewModel>().load();
+    context.read<FavoritesViewModel>().add(LoadFavorites());
   }
 
   void _onMovieTap(Movie movie) {
@@ -113,12 +113,26 @@ class _FavoritesPageState extends State<FavoritesPage> {
                   child: MovieGrid(
                     movies: state.movies,
                     itemBuilder: (context, movie) {
-                      return MovieCard(
-                        movie: movie,
-                        isFavorite: true,
-                        onToggleFavorite: () =>
-                            context.read<FavoritesViewModel>().toggle(movie),
-                        onTap: () => _onMovieTap(movie),
+                      // On utilise un BlocBuilder local ici aussi pour la réactivité
+                      return BlocBuilder<FavoritesViewModel, FavoritesState>(
+                        buildWhen: (previous, current) {
+                          if (previous is! FavoritesLoaded || current is! FavoritesLoaded) return true;
+                          final wasFav = previous.movies.any((m) => m.id == movie.id);
+                          final isFav = current.movies.any((m) => m.id == movie.id);
+                          return wasFav != isFav;
+                        },
+                        builder: (context, favState) {
+                          final isFavorite = favState is FavoritesLoaded && 
+                              favState.movies.any((m) => m.id == movie.id);
+                              
+                          return MovieCard(
+                            movie: movie,
+                            isFavorite: isFavorite,
+                            onToggleFavorite: () =>
+                                context.read<FavoritesViewModel>().add(ToggleFavorite(movie)),
+                            onTap: () => _onMovieTap(movie),
+                          );
+                        },
                       );
                     },
                   ),

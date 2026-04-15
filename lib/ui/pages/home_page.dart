@@ -28,8 +28,8 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     _scrollController.addListener(_onScroll);
-    context.read<FavoritesViewModel>().load();
-    context.read<MoviesViewModel>().loadMovies();
+    context.read<FavoritesViewModel>().add(LoadFavorites());
+    context.read<MoviesViewModel>().add(LoadMovies());
   }
 
   @override
@@ -42,7 +42,7 @@ class _HomePageState extends State<HomePage> {
   void _onScroll() {
     if (_scrollController.position.pixels >=
         _scrollController.position.maxScrollExtent - 200) {
-      context.read<MoviesViewModel>().loadMoreMovies();
+      context.read<MoviesViewModel>().add(LoadMoreMovies());
     }
   }
 
@@ -171,7 +171,7 @@ class _HomePageState extends State<HomePage> {
                   suffixIcon: IconButton(
                     onPressed: () {
                       _searchController.clear();
-                      context.read<SearchViewModel>().clearSearch();
+                      context.read<SearchViewModel>().add(ClearSearch());
                     },
                     icon: Icon(
                       Icons.clear,
@@ -187,7 +187,7 @@ class _HomePageState extends State<HomePage> {
                   contentPadding: const EdgeInsets.symmetric(vertical: 12),
                 ),
                 onChanged: (query) =>
-                    context.read<SearchViewModel>().search(query),
+                    context.read<SearchViewModel>().add(SearchMovies(query)),
               ),
             ),
             Padding(
@@ -323,7 +323,7 @@ class _HomePageState extends State<HomePage> {
         return MovieCard(
           movie: movie,
           isFavorite: isFavorite,
-          onToggleFavorite: () => context.read<FavoritesViewModel>().toggle(movie),
+          onToggleFavorite: () => context.read<FavoritesViewModel>().add(ToggleFavorite(movie)),
           onTap: () => _onMovieTap(movie),
         );
       },

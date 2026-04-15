@@ -1,14 +1,25 @@
-// FavoritesViewModel est le BLoC qui gère l'état des films favoris. Il utilise MovieManager pour la logique métier et expose des événements et états pour la UI.
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:rotten_tomatoes/services/notification_service.dart';
 import '../engines/movie_manager.dart';
 import '../entities/movie.dart';
 
-// ── STATES ──
+// ── EVENTS ──
+abstract class FavoritesEvent {}
 
+class LoadFavorites extends FavoritesEvent {}
+
+class ToggleFavorite extends FavoritesEvent {
+  final Movie movie;
+  ToggleFavorite(this.movie);
+}
+
+// ── STATES ──
 abstract class FavoritesState {}
+
 class FavoritesInitial extends FavoritesState {}
+
 class FavoritesLoading extends FavoritesState {}
+
 class FavoritesLoaded extends FavoritesState {
   final List<Movie> movies;
   FavoritesLoaded(this.movies);
@@ -19,32 +30,39 @@ class FavoritesError extends FavoritesState {
   FavoritesError(this.message);
 }
 
-// ── CUBIT ──
-class FavoritesViewModel extends Cubit<FavoritesState> {
+// ── BLOC ──
+class FavoritesViewModel extends Bloc<FavoritesEvent, FavoritesState> {
   final MovieManager _manager;
 
-  FavoritesViewModel(this._manager) : super(FavoritesInitial());
+  FavoritesViewModel(this._manager) : super(FavoritesInitial()) {
+    on<LoadFavorites>(_onLoadFavorites);
+    on<ToggleFavorite>(_onToggleFavorite);
+  }
 
-  Future<void> load() async{
+  Future<void> _onLoadFavorites(
+      LoadFavorites event, Emitter<FavoritesState> emit) async {
     emit(FavoritesLoading());
-    try{
+    try {
       final movies = await _manager.getFavorites();
       emit(FavoritesLoaded(movies));
-    } catch(e){
+    } catch (e) {
       emit(FavoritesError(e.toString()));
     }
   }
 
-
-  Future<void> toggle(Movie movie) async {
+  Future<void> _onToggleFavorite(
+      //Emitter est une classe capable d'émettre de nouveaux états.
+      ToggleFavorite event, Emitter<FavoritesState> emit) async {
     try {
-      final isFavorite = await _manager.toggleFavorite(movie);
-      if(isFavorite) {
-        NotificationService().showFavoriteNotification(movie.title);
+      final isFavorite = await _manager.toggleFavorite(event.movie);
+      if (isFavorite) {
+        NotificationService().showFavoriteNotification(event.movie.title);
       } else {
-        NotificationService().showUnfavoriteNotification(movie.title);
+        NotificationService().showUnfavoriteNotification(event.movie.title);
       }
-      await load();
+      // Recharger la liste après le toggle
+      final movies = await _manager.getFavorites();
+      emit(FavoritesLoaded(movies));
     } catch (e) {
       emit(FavoritesError(e.toString()));
     }

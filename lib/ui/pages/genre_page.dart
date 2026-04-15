@@ -18,7 +18,7 @@ class _GenrePageState extends State<GenrePage> {
   @override
   void initState() {
     super.initState();
-    context.read<GenreViewModel>().loadGenres();
+    context.read<GenreViewModel>().add(LoadGenres());
   }
 
   void _onMovieTap(Movie movie) {
@@ -73,7 +73,7 @@ class _GenrePageState extends State<GenrePage> {
                       final isSelected = state.selectedGenre?.id == genre.id;
                       return GestureDetector(
                         onTap: () =>
-                            context.read<GenreViewModel>().selectGenre(genre),
+                            context.read<GenreViewModel>().add(SelectGenre(genre)),
                         child: AnimatedContainer(
                           duration: const Duration(milliseconds: 200),
                           margin: const EdgeInsets.only(right: 8),
@@ -156,9 +156,7 @@ class _GenrePageState extends State<GenrePage> {
                                     return MovieCard(
                                       movie: movie,
                                       isFavorite: isFavorite,
-                                      onToggleFavorite: () => context
-                                          .read<FavoritesViewModel>()
-                                          .toggle(movie),
+                                      onToggleFavorite: () => context.read<FavoritesViewModel>().add(ToggleFavorite(movie)),
                                       onTap: () => _onMovieTap(movie),
                                     );
                                   },

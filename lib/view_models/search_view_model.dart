@@ -1,10 +1,18 @@
-// SearchViewModel est le BLoC qui gère l'état de la recherche de films. Il utilise MovieManager pour la logique métier et expose des événements et états pour la UI.
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../engines/movie_manager.dart';
 import '../entities/movie.dart';
 
-// ── STATES ──
+// ── EVENTS ──
+abstract class SearchEvent {}
 
+class SearchMovies extends SearchEvent {
+  final String query;
+  SearchMovies(this.query);
+}
+
+class ClearSearch extends SearchEvent {}
+
+// ── STATES ──
 abstract class SearchState {}
 
 class SearchInitial extends SearchState {}
@@ -23,20 +31,24 @@ class SearchError extends SearchState {
   SearchError(this.message);
 }
 
-// ── CUBIT ──
-class SearchViewModel extends Cubit<SearchState> {
+// ── BLOC ──
+class SearchViewModel extends Bloc<SearchEvent, SearchState> {
   final MovieManager _manager;
 
-  SearchViewModel(this._manager) : super(SearchInitial());
+  SearchViewModel(this._manager) : super(SearchInitial()) {
+    on<SearchMovies>(_onSearchMovies);
+    on<ClearSearch>(_onClearSearch);
+  }
 
-  Future<void> search(String query) async {
-    if (query.isEmpty) {
+  Future<void> _onSearchMovies(
+      SearchMovies event, Emitter<SearchState> emit) async {
+    if (event.query.isEmpty) {
       emit(SearchInitial());
       return;
     }
     emit(SearchLoading());
     try {
-      final movies = await _manager.searchMovies(query);
+      final movies = await _manager.searchMovies(event.query);
       if (movies.isEmpty) {
         emit(SearchEmpty());
       } else {
@@ -47,5 +59,7 @@ class SearchViewModel extends Cubit<SearchState> {
     }
   }
 
-  void clearSearch() => emit(SearchInitial());
+  void _onClearSearch(ClearSearch event, Emitter<SearchState> emit) {
+    emit(SearchInitial());
+  }
 }

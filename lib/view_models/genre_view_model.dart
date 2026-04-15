@@ -1,10 +1,18 @@
-// GenreViewModel est le BLoC qui gère l'état de la sélection des genres et des films associés. Il utilise MovieManager pour la logique métier et expose des événements et états pour la UI.
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../engines/movie_manager.dart';
 import '../entities/movie.dart';
 
-// ── STATES ──
+// ── EVENTS ──
+abstract class GenreEvent {}
 
+class LoadGenres extends GenreEvent {}
+
+class SelectGenre extends GenreEvent {
+  final Genre genre;
+  SelectGenre(this.genre);
+}
+
+// ── STATES ──
 abstract class GenreState {}
 
 class GenreInitial extends GenreState {}
@@ -27,12 +35,17 @@ class GenreError extends GenreState {
   GenreError(this.message);
 }
 
-// ── CUBIT ──
-class GenreViewModel extends Cubit<GenreState> {
+// ── BLOC ──
+class GenreViewModel extends Bloc<GenreEvent, GenreState> {
   final MovieManager _manager;
 
-  GenreViewModel(this._manager) : super(GenreInitial());
-  Future<void> loadGenres() async {
+  GenreViewModel(this._manager) : super(GenreInitial()) {
+    on<LoadGenres>(_onLoadGenres);
+    on<SelectGenre>(_onSelectGenre);
+  }
+
+  Future<void> _onLoadGenres(
+      LoadGenres event, Emitter<GenreState> emit) async {
     emit(GenreLoading());
     try {
       final genres = await _manager.getGenres();
@@ -42,29 +55,27 @@ class GenreViewModel extends Cubit<GenreState> {
     }
   }
 
-  Future<void> selectGenre(Genre genre) async {
+  Future<void> _onSelectGenre(
+      SelectGenre event, Emitter<GenreState> emit) async {
     final currentGenres = state is GenreLoaded
         ? (state as GenreLoaded).genres
         : <Genre>[];
 
-    emit(
-      GenreLoaded(
-        genres: currentGenres,
-        selectedGenre: genre,
-        movies: const [],
-      ));
+    emit(GenreLoaded(
+      genres: currentGenres,
+      selectedGenre: event.genre,
+      movies: const [],
+    ));
 
-      try{
-        final movies = await _manager.getMoviesByGenre(genre.id);
-        emit(
-          GenreLoaded(
-            genres: currentGenres,
-            selectedGenre: genre,
-            movies: movies,
-          ),
-        );
-      } catch(e){
-        emit(GenreError(e.toString()));
-      }
+    try {
+      final movies = await _manager.getMoviesByGenre(event.genre.id);
+      emit(GenreLoaded(
+        genres: currentGenres,
+        selectedGenre: event.genre,
+        movies: movies,
+      ));
+    } catch (e) {
+      emit(GenreError(e.toString()));
+    }
   }
 }

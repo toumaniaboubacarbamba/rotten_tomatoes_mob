@@ -5,7 +5,7 @@ import '../entities/movie.dart';
 // ── EVENTS ──
 abstract class MoviesEvent {}
 
-class LoadMovies extends MoviesEvent {}
+class LoadMovies extends Moviesvent {}
 
 class LoadMoreMovies extends MoviesEvent {}
 
